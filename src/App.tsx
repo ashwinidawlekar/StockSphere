@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar.tsx'
 import Activity from './Pages/AutoTrader/Activity.tsx'
 import { httpClient } from './Services/apiService.ts'
+import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
 // import Instruments from './pages/Instruments'
 // import Settings from './pages/Settings'
 // import Help from './pages/Help'
@@ -38,6 +39,7 @@ const App: React.FC = () => {
       <div style={{ padding: 24 }}>
         <Routes>
           <Route path="/autotrader/activity" element={<Activity />} />
+          <Route path="trading/portfolio" element={<MainTabs />} />
           {/* <Route path="/autotrader/instruments" element={<Instruments />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Help />} />

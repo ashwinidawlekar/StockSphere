@@ -1,0 +1,111 @@
+import React from 'react'
+import { Tabs } from 'antd'
+import {
+    FileTextOutlined,
+    FundOutlined,
+    NotificationOutlined,
+    PieChartOutlined,
+    // RupeeOutlined,
+    ShoppingOutlined,
+    StockOutlined,
+    SwapOutlined,
+    TransactionOutlined,
+} from '@ant-design/icons'
+
+// Your page components
+import Summary from '../Portfolio/Summary.tsx'
+// import Positions from './pages/Positions'
+// import Orders from './pages/Orders'
+// import Margins from './pages/Margins'
+// import Holdings from './pages/Holdings'
+// import Marketwatch from './pages/Marketwatch'
+import Trade from '../Trade/Trade.tsx'
+// import Notifications from './pages/Notifications'
+
+const { TabPane } = Tabs
+
+const MainTabs: React.FC = () => {
+    return (
+        <Tabs
+            defaultActiveKey="summary"
+            tabPosition="top"
+            type="line"
+            items={[
+                {
+                    key: 'summary',
+                    label: (
+                        <>
+                            <FileTextOutlined /> Summary
+                        </>
+                    ),
+                    children: <Summary />,
+                },
+                {
+                    key: 'positions',
+                    label: (
+                        <>
+                            <FundOutlined /> Positions
+                        </>
+                    ),
+                    // children: <Positions />,
+                },
+                {
+                    key: 'orders',
+                    label: (
+                        <>
+                            <TransactionOutlined /> Orders
+                        </>
+                    ),
+                    // children: <Orders />,
+                },
+                {
+                    key: 'margins',
+                    label: (
+                        <>
+                            Margins
+                        </>
+                    ),
+                    // children: <Margins />,
+                },
+                {
+                    key: 'holdings',
+                    label: (
+                        <>
+                            <ShoppingOutlined /> Holdings
+                        </>
+                    ),
+                    // children: <Holdings />,
+                },
+                {
+                    key: 'marketwatch',
+                    label: (
+                        <>
+                            <PieChartOutlined /> Marketwatch
+                        </>
+                    ),
+                    // children: <Marketwatch />,
+                },
+                {
+                    key: 'trade',
+                    label: (
+                        <>
+                            <SwapOutlined /> Trade
+                        </>
+                    ),
+                    children: <Trade />,
+                },
+                {
+                    key: 'notifications',
+                    label: (
+                        <>
+                            <NotificationOutlined /> Notifications
+                        </>
+                    ),
+                    // children: <Notifications />,
+                },
+            ]}
+        />
+    )
+}
+
+export default MainTabs
