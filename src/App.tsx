@@ -12,26 +12,26 @@ import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
 
 const App: React.FC = () => {
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await httpClient('/api/trading/readPlatformPositions', {
-          method: 'GET',
-          params: {
-            pseudoAccount: '53135052',
-          },
-          headers: {
-            'api-key': 'f0a63155-883b-4fb5-b73f-8fefe03f4e4d',
-          },
-        });
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       const data = await httpClient('/api/trading/readPlatformPositions', {
+  //         method: 'GET',
+  //         params: {
+  //           pseudoAccount: '53135052',
+  //         },
+  //         headers: {
+  //           'api-key': 'f0a63155-883b-4fb5-b73f-8fefe03f4e4d',
+  //         },
+  //       });
 
-        console.log('API Data:', data);
-      } catch (err) {
-        console.error('Error:', err);
-      }
-    };
-    fetchOrders()
-  }, [])
+  //       console.log('API Data:', data);
+  //     } catch (err) {
+  //       console.error('Error:', err);
+  //     }
+  //   };
+  //   fetchOrders()
+  // }, [])
 
   return (
     <>

@@ -20,6 +20,7 @@ import Summary from '../Portfolio/Summary.tsx'
 // import Holdings from './pages/Holdings'
 // import Marketwatch from './pages/Marketwatch'
 import Trade from '../Trade/Trade.tsx'
+import MarketWatch from '../../MarketWatch/MarketWatch.tsx'
 // import Notifications from './pages/Notifications'
 
 const { TabPane } = Tabs
@@ -83,7 +84,7 @@ const MainTabs: React.FC = () => {
                             <PieChartOutlined /> Marketwatch
                         </>
                     ),
-                    // children: <Marketwatch />,
+                    children: <MarketWatch />,
                 },
                 {
                     key: 'trade',
