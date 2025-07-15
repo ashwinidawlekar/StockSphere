@@ -1,0 +1,102 @@
+.analytics-container {
+  padding: 24px;
+  background-color: #fff;
+}
+
+.analytics-title {
+  color: #08979c;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.gradient-card {
+  color: white;
+  border-radius: 8px;
+  height: 120px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Green gradient for M2M and PnL */
+.green-card {
+  background: linear-gradient(90deg, #3ac57d, #2ddf9c);
+}
+
+/* Blue gradient for Total/Open/Closed card */
+.blue-card {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-label {
+  color: white;
+  font-size: 14px;
+}
+
+.card-amount {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.icon-rupee {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.card-row-data {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-amount-small {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.update-time-box {
+  background-color: #fff0f0;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.update-icon {
+  font-size: 18px;
+  color: #f56c6c;
+  margin-right: 8px;
+}
+
+.update-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.blue-card {
+  background: linear-gradient(90deg, #00e3e3, #01c0f0); 
+}
+
+.analytics-container {
+  padding: 24px 40px; 
+  background-color: #fff;
+}
+
+.card-row {
+  margin-bottom: 12px; 
+}
+
+
