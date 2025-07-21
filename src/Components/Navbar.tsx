@@ -56,13 +56,13 @@ const Navbar: React.FC = () => {
             </Menu.Item>
             <SubMenu key="user" icon={<UserOutlined />} title="User">
                 <Menu.Item key="user">
-                    <Link to="/trading/portfolio">Account</Link>
+                    <Link to="/user/account">Account</Link>
                 </Menu.Item>
-                <Menu.Item key="portfolio">
-                    <Link to="/trading/portfolio">Profile</Link>
+                <Menu.Item key="profile">
+                    <Link to="/user/profile">Profile</Link>
                 </Menu.Item>
-                <Menu.Item key="portfolio">
-                    <Link to="/trading/portfolio">Logout</Link>
+                <Menu.Item key="logout">
+                    <Link to="/user/logout">Logout</Link>
                 </Menu.Item>
             </SubMenu>
         </Menu>
