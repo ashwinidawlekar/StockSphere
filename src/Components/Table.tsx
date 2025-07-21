@@ -36,6 +36,9 @@ const SmartTable: React.FC<SmartTableProps> = ({
                     />
                 )}
             </Space>
+            <Space style={{ marginBottom: 16 }}>
+                {exportButtons && <><Button>Excel</Button> <Button>CSV</Button></>}
+            </Space>
 
             <Table
                 bordered

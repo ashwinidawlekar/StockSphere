@@ -4,11 +4,12 @@ import StatCard from '../../../Components/StatsCards.tsx';
 // import { Icon } from '@iconify/react';
 
 const { Title, Text } = Typography;
-const PositionAnalyticsSummary = () => {
+const PositionAnalyticsSummary = (props) => {
+    const { title } = props
     return (<div>
         <Card style={{ margin: 24, borderRadius: 12 }}>
             <Title level={5} style={{ marginBottom: 24, color: '#00bcd4' }}>
-                Positions Analytics [NET]
+                {title}
             </Title>
 
             <Row gutter={[16, 16]}>
