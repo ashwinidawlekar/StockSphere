@@ -5,6 +5,10 @@ import Navbar from './Components/Navbar.tsx'
 import Activity from './Pages/AutoTrader/Activity.tsx'
 import { httpClient } from './Services/apiService.ts'
 import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
+import Account from './Pages/User/Account';
+import Profile from './Pages/User/Profile';
+import Logout from './Pages/User/Logout';
+
 // import Instruments from './pages/Instruments'
 // import Settings from './pages/Settings'
 // import Help from './pages/Help'
@@ -40,6 +44,11 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/autotrader/activity" element={<Activity />} />
           <Route path="trading/portfolio" element={<MainTabs />} />
+          <Route path="/user/account" element={<Account />} />
+          <Route path="/user/profile" element={<Profile />} />
+          <Route path="/user/logout" element={<Logout />} />
+
+
           {/* <Route path="/autotrader/instruments" element={<Instruments />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Help />} />
