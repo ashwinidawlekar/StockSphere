@@ -14,8 +14,8 @@ import {
 
 // Your page components
 import Summary from '../Portfolio/Summary.tsx'
-// import Positions from './pages/Positions'
-// import Orders from './pages/Orders'
+import Positions from "../Portfolio/Positions";
+import Orders from "../Portfolio/Orders";
 // import Margins from './pages/Margins'
 // import Holdings from './pages/Holdings'
 // import Marketwatch from './pages/Marketwatch'
@@ -48,7 +48,7 @@ const MainTabs: React.FC = () => {
                             <FundOutlined /> Positions
                         </>
                     ),
-                    // children: <Positions />,
+                    children: <Positions />,
                 },
                 {
                     key: 'orders',
@@ -57,7 +57,7 @@ const MainTabs: React.FC = () => {
                             <TransactionOutlined /> Orders
                         </>
                     ),
-                    // children: <Orders />,
+                    children: <Orders />,
                 },
                 {
                     key: 'margins',

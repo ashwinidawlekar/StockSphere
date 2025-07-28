@@ -30,6 +30,7 @@ const Navbar: React.FC = () => {
                 <Menu.Item key="portfolio">
                     <Link to="/trading/portfolio">Portfolio</Link>
                 </Menu.Item>
+                
             </SubMenu>
             <SubMenu key="settings" icon={<SettingOutlined />} title="Settings">
                 <Menu.Item key="general">
