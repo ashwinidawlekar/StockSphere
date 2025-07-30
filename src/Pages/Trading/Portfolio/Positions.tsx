@@ -14,10 +14,10 @@ import {
 const { Option } = Select;
 
 const columns = [
-  { title: 'Symbol', dataIndex: 'symbol', width: 100, sorter: (a, b) => a.symbol - b.symbol },
   { title: "M2M", dataIndex: "m2m", width: 100, sorter: (a, b) => a.m2m - b.m2m },
   { title: "PnL", dataIndex: "pnl", width: 100, sorter: (a, b) => a.pnl - b.pnl },
   { title: "AT PnL", dataIndex: "atpnl", width: 100, sorter: (a, b) => a.atpnl - b.atpnl },
+  { title: 'Symbol', dataIndex: "symbol", width: 100, sorter: (a, b) => a.symbol - b.symbol },
   { title: "Real PL", dataIndex: "realpl", width: 100, sorter: (a, b) => a.realpl - b.realpl },
   { title: "Unreal PL", dataIndex: "unrealpl", width: 100, sorter: (a, b) => a.unrealpl - b.unrealpl },
   { title: "Net Qty", dataIndex: "netqty", width: 100, sorter: (a, b) => a.netqty - b.netqty },
@@ -40,20 +40,20 @@ const mergedRow = {
 
 const dataRow1 = {
   key: "1",
-  symbol: "TCS",
-  m2m: 100,
-  pnl: 200,
-  atpnl: 150,
-  realpl: 120,
-  unrealpl: 80,
-  netqty: 10,
-  ltp: 102.45,
-  pseacc: "ACC1",
-  trdacc: "TRD1",
-  buyqty: 5,
-  sellqty: 5,
-  buyval: 1000,
-  sellval: 1050,
+  m2m: "₹0.00",
+  pnl: "₹0.00",
+  atpnl: "₹0.00",
+  symbol: "",
+  realpl: "",
+  unrealpl: "",
+  netqty: 0,
+  ltp: "",
+  pseacc: "",
+  trdacc: "",
+  buyqty: 0,
+  sellqty: 0,
+  buyval: "₹0.00",
+  sellval: "₹0.00",
   netval: 50,
   bavg: 100.25,
   savg: 105.0,
@@ -63,31 +63,30 @@ const dataRow1 = {
   category: "Cash",
   broker: "Zerodha",
 };
-
 const dataRow2 = {
-  key: "2",
-  symbol: "INFY",
-  m2m: -50,
-  pnl: -30,
-  atpnl: -10,
-  realpl: -20,
-  unrealpl: -10,
-  netqty: -5,
-  ltp: 1480.2,
-  pseacc: "ACC2",
-  trdacc: "TRD2",
+  key: "1",
+  m2m: "₹0.00",
+  pnl: "₹0.00",
+  atpnl: "₹0.00",
+  symbol: "",
+  realpl: "",
+  unrealpl: "",
+  netqty: 0,
+  ltp: "",
+  pseacc: "",
+  trdacc: "",
   buyqty: 0,
-  sellqty: 5,
-  buyval: 0,
-  sellval: 7400,
-  netval: -7400,
-  bavg: 0,
-  savg: 1480.0,
-  state: "Closed",
-  direction: "Short",
+  sellqty: 0,
+  buyval: "₹0.00",
+  sellval: "₹0.00",
+  netval: 50,
+  bavg: 100.25,
+  savg: 105.0,
+  state: "Open",
+  direction: "Long",
   type: "EQ",
   category: "Cash",
-  broker: "AngelOne",
+  broker: "Zerodha",
 };
 
 const ALL_ROWS = [dataRow1, dataRow2];
@@ -145,10 +144,10 @@ const Positions = () => {
             onSearch={handleSearch}
             allowClear
           />
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button style={{ fontWeight: "bold" }}>Excel</Button>
-            <Button style={{ fontWeight: "bold" }}>CSV</Button>
-          </div>
+          <Col>
+            <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
+            <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
+          </Col>
           </div>
         </Col>
 

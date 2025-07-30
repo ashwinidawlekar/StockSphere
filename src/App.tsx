@@ -10,6 +10,7 @@ import Profile from './Pages/User/Profile';
 import Logout from './Pages/User/Logout';
 import Positions from "./Pages/Trading/Portfolio/Positions";
 import Orders from "./Pages/Trading/Portfolio/Orders.tsx";
+import Margins from "./Pages/Trading/Portfolio/Margins.tsx";
 
 
 // import Instruments from './pages/Instruments'
@@ -52,6 +53,7 @@ const App: React.FC = () => {
           <Route path="/user/logout" element={<Logout />} />
           <Route path="/trading/positions" element={<Positions />} />
           <Route path="/trading/orders" element={<Orders />} />
+          <Route path="/trading/margins" element={<Margins />} />
 
           {/* <Route path="/autotrader/instruments" element={<Instruments />} />
           <Route path="/settings" element={<Settings />} />

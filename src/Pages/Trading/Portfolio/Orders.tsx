@@ -16,44 +16,7 @@ const { Option } = Select;
 
 const Orders: React.FC = () => {
   const initialData = [
-    {
-      key: '1',
-      symbol: 'TCS',
-      pseAcc: 'PSE123',
-      trdAcc: 'TRD456',
-      id: 'ORD001',
-      updateTime: '2025-07-27 10:00',
-      status: 'OPEN',
-      qty: 100,
-      price: 3750.25,
-      variety: 'LIMIT',
-      trade: 'BUY',
-      order: 'NORMAL',
-      product: 'CNC',
-      exch: 'NSE',
-      trigPrc: 0,
-      fillQty: 60,
-      pendQty: 40,
-    },
-    {
-      key: '2',
-      symbol: 'INFY',
-      pseAcc: 'PSE789',
-      trdAcc: 'TRD321',
-      id: 'ORD002',
-      updateTime: '2025-07-27 10:05',
-      status: 'COMPLETE',
-      qty: 50,
-      price: 1550.75,
-      variety: 'MARKET',
-      trade: 'SELL',
-      order: 'AMO',
-      product: 'MIS',
-      exch: 'BSE',
-      trigPrc: 0,
-      fillQty: 50,
-      pendQty: 0,
-    }
+    
   ];
 
   const [data, setData] = useState(initialData);
@@ -149,8 +112,8 @@ const Orders: React.FC = () => {
       {/* Export and Search */}
       <Row justify="space-between" style={{ marginTop: 12, marginBottom: 16, flexWrap: 'wrap' }}>
         <Col>
-          <Button style={{ fontWeight: "bold" }}>Excel</Button>
-          <Button style={{ fontWeight: "bold" }}>CSV</Button>
+          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
+          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
         </Col>
         <Col>
           <Input
@@ -169,7 +132,7 @@ const Orders: React.FC = () => {
         dataSource={data}
         pagination={false}
         scroll={{ x: 'max-content' }}
-        locale={{ emptyText: <div style={{ textAlign: 'center' }}>No data available in table</div> }}
+        locale={{ emptyText: <div style={{ textAlign: 'center', fontWeight: 'bold', color: "#3d3d3d" }}>No data available in table</div> }}
         bordered
       />
 

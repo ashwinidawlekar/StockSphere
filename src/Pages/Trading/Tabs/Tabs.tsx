@@ -16,7 +16,7 @@ import {
 import Summary from '../Portfolio/Summary.tsx'
 import Positions from "../Portfolio/Positions";
 import Orders from "../Portfolio/Orders";
-// import Margins from './pages/Margins'
+import Margins from "../Portfolio/Margins";
 // import Holdings from './pages/Holdings'
 // import Marketwatch from './pages/Marketwatch'
 import Trade from '../Trade/Trade.tsx'
@@ -66,7 +66,7 @@ const MainTabs: React.FC = () => {
                             Margins
                         </>
                     ),
-                    // children: <Margins />,
+                    children: <Margins />,
                 },
                 {
                     key: 'holdings',
