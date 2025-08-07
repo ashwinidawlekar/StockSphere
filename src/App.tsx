@@ -8,9 +8,11 @@ import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
 import Account from './Pages/User/Account';
 import Profile from './Pages/User/Profile';
 import Logout from './Pages/User/Logout';
-import Positions from "./Pages/Trading/Portfolio/Positions";
+import Positions from "./Pages/Trading/Portfolio/Positions.tsx";
 import Orders from "./Pages/Trading/Portfolio/Orders.tsx";
 import Margins from "./Pages/Trading/Portfolio/Margins.tsx";
+import Holdings from "./Pages/Trading/Portfolio/Holdings.tsx";
+import Notifications from "./Pages/Trading/Portfolio/Notifications.tsx";
 
 
 // import Instruments from './pages/Instruments'
@@ -54,6 +56,9 @@ const App: React.FC = () => {
           <Route path="/trading/positions" element={<Positions />} />
           <Route path="/trading/orders" element={<Orders />} />
           <Route path="/trading/margins" element={<Margins />} />
+          <Route path="/trading/holdings" element={<Holdings />} />
+          <Route path="/trading/notifications" element={<Notifications />} />
+
 
           {/* <Route path="/autotrader/instruments" element={<Instruments />} />
           <Route path="/settings" element={<Settings />} />

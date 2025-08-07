@@ -14,14 +14,15 @@ import {
 
 // Your page components
 import Summary from '../Portfolio/Summary.tsx'
-import Positions from "../Portfolio/Positions";
-import Orders from "../Portfolio/Orders";
-import Margins from "../Portfolio/Margins";
-// import Holdings from './pages/Holdings'
+import Positions from "../Portfolio/Positions.tsx";
+import Orders from "../Portfolio/Orders.tsx";
+import Margins from "../Portfolio/Margins.tsx";
+import Holdings from "../Portfolio/Holdings.tsx";
+import Notifications from "../Portfolio/Notifications.tsx";
 // import Marketwatch from './pages/Marketwatch'
 import Trade from '../Trade/Trade.tsx'
 import MarketWatch from '../../MarketWatch/MarketWatch.tsx'
-// import Notifications from './pages/Notifications'
+
 
 const { TabPane } = Tabs
 
@@ -75,7 +76,7 @@ const MainTabs: React.FC = () => {
                             <ShoppingOutlined /> Holdings
                         </>
                     ),
-                    // children: <Holdings />,
+                    children: <Holdings />,
                 },
                 {
                     key: 'marketwatch',
@@ -102,7 +103,7 @@ const MainTabs: React.FC = () => {
                             <NotificationOutlined /> Notifications
                         </>
                     ),
-                    // children: <Notifications />,
+                    children: <Notifications />,
                 },
             ]}
         />

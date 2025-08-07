@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   Input,
   Button,
   Tooltip,
   Row,
-  Col
+  Col,
+  Select
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 const Margins: React.FC = () => {
   const initialData = [
@@ -33,8 +36,11 @@ const Margins: React.FC = () => {
     }
   ];
 
+  const [data, setData] = useState(initialData);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState(initialData);
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  
 
   const handleSearch = (value: string) => {
     const lower = value.toLowerCase();
@@ -51,6 +57,23 @@ const Margins: React.FC = () => {
     }
   };
 
+  const handleColumnFilter = (value: string, dataIndex: string) => {
+    const newFilters = { ...filters, [dataIndex]: value };
+    setFilters(newFilters);
+
+    let updated = initialData;
+    Object.keys(newFilters).forEach((key) => {
+      const searchValue = newFilters[key].toLowerCase();
+      if (searchValue) {
+        updated = updated.filter((item) =>
+          String(item[key]).toLowerCase().includes(searchValue)
+        );
+      }
+    });
+
+    setFilteredData(updated);
+  };
+
   const mergedRow = {
     key: '0',
     isMergedRow: true,
@@ -59,7 +82,6 @@ const Margins: React.FC = () => {
 
   const tableData = [mergedRow, ...filteredData];
 
-  // Define your extra columns with render method to hide cells on merged row
   const extraColumns = filteredData.length > 0 ? [
     
     {
@@ -160,7 +182,6 @@ const Margins: React.FC = () => {
     },
   ] : [];
 
-  // First column with merged content remains unchanged
   const firstColumn = {
     title: 'Pse Acc',
     dataIndex: 'pseAcc',
@@ -177,8 +198,44 @@ const Margins: React.FC = () => {
         : _
   };
 
-  // Combine both parts of the columns array
   const columns = [firstColumn, ...extraColumns];
+
+  const filterInputRow = (
+      <tr>
+        {columns.map((col) => {
+          if (col.dataIndex === 'pseAcc' && filteredData.length === 0) {
+            return <th key={col.dataIndex} />;
+          }
+  
+          const uniqueValues = Array.from(
+            new Set(initialData.map((item) => item[col.dataIndex]))
+          );
+  
+          return (
+            <th key={col.dataIndex}>
+              <Select
+                allowClear
+                showSearch
+                size="small"
+                style={{ width: '100%' }}
+                placeholder=""
+                value={filters[col.dataIndex] || undefined}
+                onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {uniqueValues.map((val) => (
+                  <Option key={val} value={val}>
+                    {val}
+                  </Option>
+                ))}
+              </Select>
+            </th>
+          );
+        })}
+      </tr>
+  );
 
   return (
     <div style={{ padding: 16 }}>
@@ -206,7 +263,6 @@ const Margins: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Export Buttons + Search */}
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
           <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
@@ -230,6 +286,30 @@ const Margins: React.FC = () => {
         pagination={false}
         bordered
         scroll={{ x: 'max-content' }}
+        locale={{
+          emptyText: (
+            <div
+              style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: '#3d3d3d',
+              }}
+            >
+              No data available in table
+            </div>
+          ),
+        }}
+        components={{
+          header: {
+            cell: (props: any) => <th {...props} />,
+            row: (props: any) => (
+              <>
+                <tr {...props} />
+                {filterInputRow}
+              </>
+            ),
+          },
+        }}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   Input,
@@ -21,19 +21,45 @@ const Orders: React.FC = () => {
 
   const [data, setData] = useState(initialData);
   const [searchText, setSearchText] = useState('');
-
+  const [filteredData, setFilteredData] = useState(initialData);
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  
   const handleSearch = (value: string) => {
-    setSearchText(value.toLowerCase());
+    const lower = value.toLowerCase();
+    setSearchText(value);
     if (value.trim() === '') {
-      setData(initialData);
+      setFilteredData(initialData);
     } else {
       const filtered = initialData.filter((item) =>
         Object.values(item).some(val =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+          String(val).toLowerCase().includes(lower)
         )
       );
-      setData(filtered);
+      setFilteredData(filtered);
     }
+  };
+
+  const handleColumnFilter = (value: string, dataIndex: string) => {
+    const newFilters = { ...filters, [dataIndex]: value };
+    setFilters(newFilters);
+
+    let updated = initialData;
+    Object.keys(newFilters).forEach((key) => {
+      const searchValue = newFilters[key].toLowerCase();
+      if (searchValue) {
+        updated = updated.filter((item) =>
+          String(item[key]).toLowerCase().includes(searchValue)
+        );
+      }
+    });
+
+    setFilteredData(updated);
+  };
+
+  const mergedRow = {
+    key: '0',
+    isMergedRow: true,
+    symbol: 'No data available in table.',
   };
 
   const columns = [
@@ -54,6 +80,41 @@ const Orders: React.FC = () => {
     { title: 'Fill Qty', dataIndex: 'fillQty', sorter: (a: any, b: any) => a.fillQty - b.fillQty },
     { title: 'Pend Qty', dataIndex: 'pendQty', sorter: (a: any, b: any) => a.pendQty - b.pendQty },
   ];
+
+   const filterInputRow = (
+  <tr>
+    {columns.map((col) => {
+          
+      const uniqueValues = Array.from(
+        new Set(initialData.map((item) => item[col.dataIndex]).filter(Boolean))
+      );
+
+      return (
+        <th key={col.dataIndex}>
+          <Select
+            allowClear
+            showSearch
+            size="small"
+            style={{ width: '100%' }}
+            placeholder=""
+            value={filters[col.dataIndex] || undefined}
+            onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
+            filterOption={(input, option) =>
+              (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+            }
+          >
+          {uniqueValues.map((val) => (
+            <Option key={val} value={val}>
+              {val}
+            </Option>
+          ))}
+          </Select>
+        </th>
+      );
+    })}
+  </tr>
+);
+
 
   return (
     <div style={{ padding: 16 }}>
@@ -126,15 +187,37 @@ const Orders: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Orders Table */}
       <Table
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-        scroll={{ x: 'max-content' }}
-        locale={{ emptyText: <div style={{ textAlign: 'center', fontWeight: 'bold', color: "#3d3d3d" }}>No data available in table</div> }}
-        bordered
-      />
+              columns={columns}
+              dataSource={filteredData}
+              pagination={false}
+              bordered
+              scroll={{ x: 'max-content' }}
+              locale={{
+                emptyText: (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                      color: '#3d3d3d',
+                    }}
+                  >
+                    No data available in table
+                  </div>
+                ),
+              }}
+              components={{
+                header: {
+                  cell: (props: any) => <th {...props} />,
+                  row: (props: any) => (
+                    <>
+                      <tr {...props} />
+                      {filterInputRow}
+                    </>
+                  ),
+                },
+              }}
+            />
 
       {/* Summary [COUNT] */}
       <Card style={{ marginTop: 24 }}>
