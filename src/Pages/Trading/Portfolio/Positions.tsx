@@ -15,7 +15,6 @@ const { Option } = Select;
 
 const Positions: React.FC = () => {
   const initialData = [
-    
     {
       key: "1",
       m2m: "₹0.00",
@@ -84,99 +83,21 @@ const Positions: React.FC = () => {
     parseFloat(val.replace(/[^0-9.-]+/g, '')) || 0;
 
   const columns = [
-    {
-      title: "M2M",
-      dataIndex: "m2m",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.m2m) - parseCurrency(b.m2m),
-      onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }),
-    },
-    {
-      title: "PnL",
-      dataIndex: "pnl",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.pnl) - parseCurrency(b.pnl),
-      onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }),
-    },
-    {
-      title: "AT PnL",
-      dataIndex: "atpnl",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl),
-      onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }),
-    },
-    {
-      title: 'Symbol',
-      dataIndex: "symbol",
-      width: 100,
-      sorter: (a, b) => a.symbol.localeCompare(b.symbol),
-    },
-    {
-      title: "Real PL",
-      dataIndex: "realpl",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.realpl) - parseCurrency(b.realpl),
-    },
-    {
-      title: "Unreal PL",
-      dataIndex: "unrealpl",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl),
-    },
-    {
-      title: "Net Qty",
-      dataIndex: "netqty",
-      width: 100,
-      sorter: (a, b) => a.netqty - b.netqty,
-    },
-    {
-      title: "Ltp",
-      dataIndex: "ltp",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.ltp) - parseCurrency(b.ltp),
-    },
-    {
-      title: "Buy Qty",
-      dataIndex: "buyqty",
-      width: 100,
-      sorter: (a, b) => a.buyqty - b.buyqty,
-    },
-    {
-      title: "Sell Qty",
-      dataIndex: "sellqty",
-      width: 100,
-      sorter: (a, b) => a.sellqty - b.sellqty,
-    },
-    {
-      title: "Buy Val",
-      dataIndex: "buyval",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.buyval) - parseCurrency(b.buyval),
-    },
-    {
-      title: "Sell Val",
-      dataIndex: "sellval",
-      width: 100,
-      sorter: (a, b) => parseCurrency(a.sellval) - parseCurrency(b.sellval),
-    },
-    {
-      title: "Net Val",
-      dataIndex: "netval",
-      width: 100,
-      sorter: (a, b) => a.netval - b.netval,
-    },
-    {
-      title: "B Avg Prc",
-      dataIndex: "bavg",
-      width: 100,
-      sorter: (a, b) => a.bavg - b.bavg,
-    },
-    {
-      title: "S Avg Prc",
-      dataIndex: "savg",
-      width: 100,
-      sorter: (a, b) => a.savg - b.savg,
-    },
+    { title: "M2M", dataIndex: "m2m", width: 100, sorter: (a, b) => parseCurrency(a.m2m) - parseCurrency(b.m2m), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { title: "PnL", dataIndex: "pnl", width: 100, sorter: (a, b) => parseCurrency(a.pnl) - parseCurrency(b.pnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { title: "AT PnL", dataIndex: "atpnl", width: 100, sorter: (a, b) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { title: 'Symbol', dataIndex: "symbol", width: 100, sorter: (a, b) => a.symbol.localeCompare(b.symbol) },
+    { title: "Real PL", dataIndex: "realpl", width: 100, sorter: (a, b) => parseCurrency(a.realpl) - parseCurrency(b.realpl) },
+    { title: "Unreal PL", dataIndex: "unrealpl", width: 100, sorter: (a, b) => parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl) },
+    { title: "Net Qty", dataIndex: "netqty", width: 100, sorter: (a, b) => a.netqty - b.netqty },
+    { title: "Ltp", dataIndex: "ltp", width: 100, sorter: (a, b) => parseCurrency(a.ltp) - parseCurrency(b.ltp) },
+    { title: "Buy Qty", dataIndex: "buyqty", width: 100, sorter: (a, b) => a.buyqty - b.buyqty },
+    { title: "Sell Qty", dataIndex: "sellqty", width: 100, sorter: (a, b) => a.sellqty - b.sellqty },
+    { title: "Buy Val", dataIndex: "buyval", width: 100, sorter: (a, b) => parseCurrency(a.buyval) - parseCurrency(b.buyval) },
+    { title: "Sell Val", dataIndex: "sellval", width: 100, sorter: (a, b) => parseCurrency(a.sellval) - parseCurrency(b.sellval) },
+    { title: "Net Val", dataIndex: "netval", width: 100, sorter: (a, b) => a.netval - b.netval },
+    { title: "B Avg Prc", dataIndex: "bavg", width: 100, sorter: (a, b) => a.bavg - b.bavg },
+    { title: "S Avg Prc", dataIndex: "savg", width: 100, sorter: (a, b) => a.savg - b.savg },
   ];
 
   const filterInputRow = (
@@ -185,7 +106,6 @@ const Positions: React.FC = () => {
         const uniqueValues = Array.from(
           new Set(initialData.map((item) => item[col.dataIndex]).filter(Boolean))
         );
-
         return (
           <th key={col.dataIndex}>
             <Select
@@ -214,10 +134,9 @@ const Positions: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      {/* Dropdown + Buttons */}
-      <Row gutter={[8, 8]} align="middle" style={{ marginBottom: 8 }}>
+      <Row gutter={[8, 8]} align="middle" style={{ marginBottom: 8 }} wrap>
         <Col>
-          <Tooltip title="Category Of Positions (Keep it NET, if you are not sure)">
+          <Tooltip title="Category Of Positions">
             <Select defaultValue="NET" style={{ width: 120 }}>
               <Option value="NET">NET</Option>
               <Option value="DAY">DAY</Option>
@@ -246,47 +165,26 @@ const Positions: React.FC = () => {
           </Tooltip>
         </Col>
 
-        <Col>
-          <Tooltip title="Reset Positions Filter">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }} onClick={() => console.log("Reset clicked")}>
-              Reset
-            </Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Select all positions">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }} onClick={() => console.log("Select clicked")}>
-              Select
-            </Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Deselect all positions">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }} onClick={() => console.log("Deselect clicked")}>
-              Deselect
-            </Button>
-          </Tooltip>
-        </Col>
-
+        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button></Col>
+        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Select</Button></Col>
+        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Deselect</Button></Col>
         <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Pos. Mkt.</Button></Col>
         <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Pos.</Button></Col>
         <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Acc.</Button></Col>
       </Row>
 
-      {/* Search and Export */}
-      <Row justify="space-between" style={{ marginTop: 12, marginBottom: 16 }}>
-        <Col>
+      <Row gutter={[8, 8]} justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={24} md={12}>
           <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
           <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
         </Col>
-
-        <Col>
+        <Col xs={24} sm={24} md={12} style={{ textAlign: "right" }}>
           <Input
             placeholder="Search"
             prefix={<SearchOutlined />}
-            style={{ width: 200 }}
             value={searchText}
-            onChange={e => handleSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: "100%", maxWidth: 220 }}
           />
         </Col>
       </Row>
@@ -342,29 +240,29 @@ const Positions: React.FC = () => {
         style={{ marginTop: 24, background: "#f4faff", border: "1px solid #d9d9d9" }}
       >
         <Row gutter={[16, 8]}>
-          <Col span={4}>
+          <Col xs={24} sm={12} md={8} lg={4}>
             <div><strong>» M2M</strong> = <strong style={{ color: "#1414d2" }}>0.00</strong></div>
             <div><strong>» PnL</strong> = <strong style={{ color: "#1414d2" }}>0.00</strong></div>
             <div><strong>» AT PnL</strong> = <strong style={{ color: "#1414d2" }}>0.00</strong></div>
           </Col>
 
-          <Col span={4}>
+          <Col xs={24} sm={12} md={8} lg={4}>
             <div><span style={{ color: "#228B22", fontWeight: "bold" }}>» Long</span> = <strong style={{ color: "#1414d2" }}>0</strong></div>
             <div><span style={{ color: "#8B0000", fontWeight: "bold" }}>» Short</span> = <strong style={{ color: "#1414d2" }}>0</strong></div>
             <div><span style={{ color: "#1c55c0", fontWeight: "bold" }}>» Neutral</span> = <strong style={{ color: "#1414d2" }}>0</strong></div>
           </Col>
 
-          <Col span={4}>
+          <Col xs={24} sm={12} md={8} lg={4}>
             <div><strong>» Open</strong> = <strong style={{ color: "#1414d2" }}>0</strong></div>
             <div><strong>» Closed</strong> = <strong style={{ color: "#1414d2" }}>0</strong></div>
           </Col>
 
-          <Col span={4}>
+          <Col xs={24} sm={12} md={8} lg={4}>
             <div><span style={{ color: "#228B22", fontWeight: "bold" }}>» NetQty-L</span> = <strong style={{ color: "#1414d2" }}>0</strong></div>
             <div><span style={{ color: "#8B0000", fontWeight: "bold" }}>» NetQty-S</span> = <strong style={{ color: "#1414d2" }}>0</strong></div>
           </Col>
 
-          <Col span={4}>
+          <Col xs={24} sm={12} md={8} lg={4}>
             <div><strong>» Total</strong> = <strong style={{ color: "#1414d2" }}>0</strong></div>
             <div><strong>» Accounts</strong> = <strong style={{ color: "#1414d2" }}>0</strong></div>
           </Col>

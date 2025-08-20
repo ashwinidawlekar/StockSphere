@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import axios from 'axios'
+//import axios from 'axios'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar.tsx'
 import Activity from './Pages/AutoTrader/Activity.tsx'
-import { httpClient } from './Services/apiService.ts'
+//import { httpClient } from './Services/apiService.ts'
 import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
 import Account from './Pages/User/Account';
 import Profile from './Pages/User/Profile';
@@ -13,7 +13,7 @@ import Orders from "./Pages/Trading/Portfolio/Orders.tsx";
 import Margins from "./Pages/Trading/Portfolio/Margins.tsx";
 import Holdings from "./Pages/Trading/Portfolio/Holdings.tsx";
 import Notifications from "./Pages/Trading/Portfolio/Notifications.tsx";
-
+import Screener from "./Pages/Screener/Screener";
 
 // import Instruments from './pages/Instruments'
 // import Settings from './pages/Settings'
@@ -58,7 +58,7 @@ const App: React.FC = () => {
           <Route path="/trading/margins" element={<Margins />} />
           <Route path="/trading/holdings" element={<Holdings />} />
           <Route path="/trading/notifications" element={<Notifications />} />
-
+          <Route path='/Screener/Screener' element={<Screener />} />
 
           {/* <Route path="/autotrader/instruments" element={<Instruments />} />
           <Route path="/settings" element={<Settings />} />
@@ -68,9 +68,7 @@ const App: React.FC = () => {
       </div>
     </>
   )
-
 }
-
 export default App
 
 

@@ -8,6 +8,7 @@ import {
     QuestionCircleOutlined,
     StockOutlined
 } from '@ant-design/icons'
+import { FundOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu
 
@@ -66,6 +67,12 @@ const Navbar: React.FC = () => {
                     <Link to="/user/logout">Logout</Link>
                 </Menu.Item>
             </SubMenu>
+            <SubMenu key="screener" icon={<FundOutlined />} title="Screener">
+                <Menu.Item key="screener">
+                    <Link to="/screener/screener">Screener</Link>
+                </Menu.Item>
+            </SubMenu>
+
         </Menu>
     )
 }

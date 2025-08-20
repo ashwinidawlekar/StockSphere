@@ -8,22 +8,21 @@ import {
   Row,
   Col,
   Divider,
-  Tooltip
+  Tooltip,
+  Space
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
 const Orders: React.FC = () => {
-  const initialData = [
-    
-  ];
+  const initialData = [];
 
   const [data, setData] = useState(initialData);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState(initialData);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  
+
   const handleSearch = (value: string) => {
     const lower = value.toLowerCase();
     setSearchText(value);
@@ -81,45 +80,43 @@ const Orders: React.FC = () => {
     { title: 'Pend Qty', dataIndex: 'pendQty', sorter: (a: any, b: any) => a.pendQty - b.pendQty },
   ];
 
-   const filterInputRow = (
-  <tr>
-    {columns.map((col) => {
-          
-      const uniqueValues = Array.from(
-        new Set(initialData.map((item) => item[col.dataIndex]).filter(Boolean))
-      );
+  const filterInputRow = (
+    <tr>
+      {columns.map((col) => {
+        const uniqueValues = Array.from(
+          new Set(initialData.map((item) => item[col.dataIndex]).filter(Boolean))
+        );
 
-      return (
-        <th key={col.dataIndex}>
-          <Select
-            allowClear
-            showSearch
-            size="small"
-            style={{ width: '100%' }}
-            placeholder=""
-            value={filters[col.dataIndex] || undefined}
-            onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
-            filterOption={(input, option) =>
-              (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
-            }
-          >
-          {uniqueValues.map((val) => (
-            <Option key={val} value={val}>
-              {val}
-            </Option>
-          ))}
-          </Select>
-        </th>
-      );
-    })}
-  </tr>
-);
-
+        return (
+          <th key={col.dataIndex}>
+            <Select
+              allowClear
+              showSearch
+              size="small"
+              style={{ width: '100%' }}
+              placeholder=""
+              value={filters[col.dataIndex] || undefined}
+              onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
+              filterOption={(input, option) =>
+                (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {uniqueValues.map((val) => (
+                <Option key={val} value={val}>
+                  {val}
+                </Option>
+              ))}
+            </Select>
+          </th>
+        );
+      })}
+    </tr>
+  );
 
   return (
     <div style={{ padding: 16 }}>
       {/* Top Action Buttons */}
-      <Row gutter={[8, 8]} align="middle">
+      <Row gutter={[8, 8]} align="middle" wrap={true}>
         <Col>
           <Tooltip title="Order Status">
             <Select defaultValue="ALL" style={{ width: 160 }}>
@@ -133,48 +130,43 @@ const Orders: React.FC = () => {
             </Select>
           </Tooltip>
         </Col>
-        <Col>
-          <Tooltip title="Show active orders [OPEN, TRIGGER_PENDING, UNKNOWN]">
-            <Button type="primary" style={{ backgroundColor: '#00b96b' }}>Active</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Show inactive orders [COMPLETE, CANCELLED, REJECTED]">
-            <Button type="primary" style={{ backgroundColor: '#00b96b' }}>Inactive</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Reset orders filter">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Select all orders">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Select</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Deselect all orders">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Deselect</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Modify one or more orders">
-            <Button style={{ backgroundColor: '#ea9845e9', borderColor: '#ea7e45', color: '#fff' }}>Modify</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Cancel one or more orders">
-            <Button style={{ backgroundColor: '#fa0801', borderColor: '#fa0801', color: '#fff' }}>Cancel</Button>
-          </Tooltip>
-        </Col>
+        
+        {[
+          { title: "Active", color: "#00b96b" },
+          { title: "Inactive", color: "#00b96b" },
+          { title: "Reset", color: "#6e6e6e" },
+          { title: "Select", color: "#6e6e6e" },
+          { title: "Deselect", color: "#6e6e6e" },
+          { title: "Modify", color: "#ea9845e9", border: "#ea7e45" },
+          { title: "Cancel", color: "#fa0801", border: "#fa0801" }
+        ].map((btn, idx) => (
+          <Col key={idx}>
+            <Tooltip title={btn.title}>
+              <Button
+                style={{
+                  minWidth: 100,
+                  backgroundColor: btn.color,
+                  borderColor: btn.border || btn.color,
+                  color: "#fff"
+                }}
+              >
+                {btn.title}
+              </Button>
+            </Tooltip>
+          </Col>
+        ))}
       </Row>
 
-      {/* Export and Search */}
-      <Row justify="space-between" style={{ marginTop: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-        <Col>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
+      <Row
+        justify="space-between"
+        style={{ marginTop: 12, marginBottom: 16, flexWrap: 'wrap' }}
+        gutter={[8, 8]}
+      >
+        <Col xs={24} sm={12} md={12} lg={8}>
+          <Space>
+            <Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
+            <Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
+          </Space>
         </Col>
         <Col>
           <Input
@@ -188,95 +180,83 @@ const Orders: React.FC = () => {
       </Row>
 
       <Table
-              columns={columns}
-              dataSource={filteredData}
-              pagination={false}
-              bordered
-              scroll={{ x: 'max-content' }}
-              locale={{
-                emptyText: (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      color: '#3d3d3d',
-                    }}
-                  >
-                    No data available in table
-                  </div>
-                ),
+        columns={columns}
+        dataSource={filteredData}
+        pagination={false}
+        bordered
+        scroll={{ x: 'max-content' }}
+        locale={{
+          emptyText: (
+            <div
+              style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: '#3d3d3d',
               }}
-              components={{
-                header: {
-                  cell: (props: any) => <th {...props} />,
-                  row: (props: any) => (
-                    <>
-                      <tr {...props} />
-                      {filterInputRow}
-                    </>
-                  ),
-                },
-              }}
-            />
+            >
+              No data available in table
+            </div>
+          ),
+        }}
+        components={{
+          header: {
+            cell: (props: any) => <th {...props} />,
+            row: (props: any) => (
+              <>
+                <tr {...props} />
+                {filterInputRow}
+              </>
+            ),
+          },
+        }}
+      />
 
       {/* Summary [COUNT] */}
       <Card style={{ marginTop: 24 }}>
         <h3 style={{ color: '#00b2b2', fontWeight: 'bold' }}>ORDERS SUMMARY [COUNT]</h3>
-        <Row justify="space-between">
+        <Row justify="space-between" gutter={[16, 16]}>
           <Divider />
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ fontWeight: 'bold', color: '#0080ff' }}>» Open: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ fontWeight: 'bold', color: '#800080' }}>» Trig Pend: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ color: '#A52A2A', fontWeight: 'bold' }}>» Rejected: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ color: '#228B22', fontWeight: 'bold' }}>» Cancelled: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ color: '#006400', fontWeight: 'bold' }}>» Complete: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ color: '#00008B', fontWeight: 'bold' }}>» Unknown: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ fontWeight: 'bold' }}>» Total: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ fontWeight: 'bold' }}>» Accounts = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
         </Row>
-
-        <p style={{ color: '#999' }}>
-          <span style={{ color: '#007bff' }}>☞</span> Status: [Buy + Sell = Total] <br />
-          <span style={{ color: '#007bff' }}>☞</span> Shows order count by status. Buy, sell as well as total order count. <br />
-          <span style={{ color: '#007bff' }}>☞</span> Summary is calculated based on filtered (visible) rows only.
-        </p>
       </Card>
 
       {/* Summary [QUANTITY] */}
       <Card style={{ marginTop: 16 }}>
         <h3 style={{ color: '#A9A9A9', fontWeight: 'bold' }}>ORDERS SUMMARY [QUANTITY]</h3>
-        <Row justify="space-between">
+        <Row justify="space-between" gutter={[16, 16]}>
           <Divider />
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ fontWeight: 'bold', color: '#0080ff' }}>» Open: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ fontWeight: 'bold', color: '#800080' }}>» Trig Pend: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ color: '#A52A2A', fontWeight: 'bold' }}>» Rejected: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ color: '#228B22', fontWeight: 'bold' }}>» Cancelled: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ color: '#006400', fontWeight: 'bold' }}>» Complete: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ color: '#00008B', fontWeight: 'bold' }}>» Unknown: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
-          <Col>
+          <Col xs={24} sm={12} md={6}>
             <div style={{ fontWeight: 'bold' }}>» Total: 0 + 0 = <span style={{ color: '#0000ff' }}>0</span></div>
             <div style={{ fontWeight: 'bold' }}>» Accounts = <span style={{ color: '#0000ff' }}>0</span></div>
           </Col>
         </Row>
-
-        <p style={{ color: '#999' }}>
-          <span style={{ color: '#007bff' }}>☞</span> Status : [Buy Qty + Sell Qty = Total Qty] <br />
-          <span style={{ color: '#007bff' }}>☞</span> Shows order quantity total by status. Buy, sell as well as total order quantity. <br />
-          <span style={{ color: '#007bff' }}>☞</span> Summary is calculated based on filtered (visible) rows only.
-        </p>
       </Card>
     </div>
   );

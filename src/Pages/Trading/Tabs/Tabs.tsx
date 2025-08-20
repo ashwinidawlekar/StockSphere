@@ -21,7 +21,7 @@ import Holdings from "../Portfolio/Holdings.tsx";
 import Notifications from "../Portfolio/Notifications.tsx";
 // import Marketwatch from './pages/Marketwatch'
 import Trade from '../Trade/Trade.tsx'
-import MarketWatch from '../../MarketWatch/MarketWatch.tsx'
+import MarketWatch from "../../MarketWatch/MarketWatch.tsx";
 
 
 const { TabPane } = Tabs

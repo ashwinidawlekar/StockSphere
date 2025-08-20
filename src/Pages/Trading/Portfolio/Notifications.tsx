@@ -85,8 +85,8 @@ const Notifications: React.FC = () => {
     { title: 'Title', dataIndex: 'title', sorter: (a: any, b: any) => a.title.localeCompare(b.title) },
     { title: 'Message', dataIndex: 'message', sorter: (a: any, b: any) => a.message.localeCompare(b.message) },
     { title: 'Broker', dataIndex: 'broker', sorter: (a: any, b: any) => a.broker.localeCompare(b.broker) },
-    { title: 'Category', dataIndex: 'category', sorter: (a: any, b: any) => a.category - b.category },
-    { title: 'Command Id', dataIndex: 'commandid', sorter: (a: any, b: any) => a.commandid - b.commandid },
+    { title: 'Category', dataIndex: 'category', sorter: (a: any, b: any) => a.category.localeCompare(b.category) },
+    { title: 'Command Id', dataIndex: 'commandid', sorter: (a: any, b: any) => a.commandid.localeCompare(b.commandid) },
     { title: 'Id', dataIndex: 'id', sorter: (a: any, b: any) => a.id.localeCompare(b.id) },
   ];
 
@@ -126,8 +126,8 @@ const Notifications: React.FC = () => {
   return (
     <div style={{ padding: 16 }}>
       {/* Top Controls */}
-      <Row gutter={[8, 8]} align="middle">
-        <Col>
+      <Row gutter={[8, 8]} align="middle" style={{ flexWrap: 'wrap' }}>
+        <Col xs={24} sm={12} md={6}>
           <Tooltip title="Reset notifications filter">
             <Button
               style={{ backgroundColor: '#6e6e6e', color: '#fff' }}
@@ -146,8 +146,9 @@ const Notifications: React.FC = () => {
       <Row
         justify="space-between"
         style={{ marginTop: 12, marginBottom: 8, flexWrap: 'wrap' }}
+        gutter={[8, 8]}
       >
-        <Col>
+        <Col xs={24} sm={24} md={12}>
           <Tooltip title="Download in Excel format">
             <Button
               style={{
@@ -173,11 +174,11 @@ const Notifications: React.FC = () => {
             </Button>
           </Tooltip>
         </Col>
-        <Col>
+        <Col xs={24} sm={24} md={12} style={{ textAlign: 'right' }}>
           <Input
             placeholder="Search"
             prefix={<SearchOutlined />}
-            style={{ width: 200 }}
+            style={{ width: '100%', maxWidth: 220 }}
             value={searchText}
             onChange={(e) => handleGlobalSearch(e.target.value)}
           />
@@ -185,13 +186,13 @@ const Notifications: React.FC = () => {
       </Row>
 
       {/* Dropdown search after headers */}
-      <Row justify="end" style={{ marginBottom: 16 }}>
-        <Col>
+      <Row justify="end" style={{ marginBottom: 16 }} gutter={[8, 8]}>
+        <Col xs={24} sm={12} md={6}>
           <Select
             showSearch
             allowClear
             placeholder="Filter by Title"
-            style={{ width: 200 }}
+            style={{ width: '100%' }}
             optionFilterProp="children"
             onChange={handleTitleDropdownFilter}
             filterOption={(input, option) =>

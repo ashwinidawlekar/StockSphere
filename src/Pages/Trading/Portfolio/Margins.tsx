@@ -40,7 +40,6 @@ const Margins: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState(initialData);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  
 
   const handleSearch = (value: string) => {
     const lower = value.toLowerCase();
@@ -83,103 +82,22 @@ const Margins: React.FC = () => {
   const tableData = [mergedRow, ...filteredData];
 
   const extraColumns = filteredData.length > 0 ? [
-    
-    {
-      title: 'Trd Acc',
-      dataIndex: 'trdAcc',
-      sorter: (a, b) => a.trdAcc.localeCompare(b.trdAcc),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Category',
-      dataIndex: 'category',
-      sorter: (a, b) => a.category.localeCompare(b.category),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      sorter: (a, b) => a.total.localeCompare(b.total),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Net',
-      dataIndex: 'net',
-      sorter: (a, b) => a.net.localeCompare(b.net),      
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Funds',
-      dataIndex: 'funds',
-      sorter: (a, b) => a.funds.localeCompare(b.funds),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Utilized',
-      dataIndex: 'utilized',
-      sorter: (a, b) => a.utilized.localeCompare(b.utilized),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Available',
-      dataIndex: 'available',
-      sorter: (a, b) => a.available.localeCompare(b.available),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Collateral',
-      dataIndex: 'collateral',
-      sorter: (a, b) => a.collateral.localeCompare(b.collateral),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Real. Mtm',
-      dataIndex: 'realmtm',
-      sorter: (a, b) => a.realmtm.localeCompare(b.realmtm),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Unreal. Mtm',
-      dataIndex: 'unrealmtm',
-      sorter: (a, b) => a.unrealmtm.localeCompare(b.unrealmtm),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Adhoc',
-      dataIndex: 'adhoc',
-      sorter: (a, b) => a.adhoc.localeCompare(b.adhoc),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Span',
-      dataIndex: 'span',
-      sorter: (a, b) => a.span.localeCompare(b.span),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Exposure',
-      dataIndex: 'exposure',
-      sorter: (a, b) => a.exposure.localeCompare(b.exposure),      
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Payin',
-      dataIndex: 'payin',
-      sorter: (a, b) => a.payin.localeCompare(b.payin),      
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Day',
-      dataIndex: 'day',
-      sorter: (a, b) => a.day.localeCompare(b.day),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
-    {
-      title: 'Broker',
-      dataIndex: 'broker',
-      sorter: (a, b) => a.broker.localeCompare(b.broker),
-      render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
-    },
+    { title: 'Trd Acc', dataIndex: 'trdAcc', sorter: (a, b) => a.trdAcc.localeCompare(b.trdAcc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Category', dataIndex: 'category', sorter: (a, b) => a.category.localeCompare(b.category), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Total', dataIndex: 'total', sorter: (a, b) => a.total.localeCompare(b.total), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Net', dataIndex: 'net', sorter: (a, b) => a.net.localeCompare(b.net), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Funds', dataIndex: 'funds', sorter: (a, b) => a.funds.localeCompare(b.funds), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Utilized', dataIndex: 'utilized', sorter: (a, b) => a.utilized.localeCompare(b.utilized), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Available', dataIndex: 'available', sorter: (a, b) => a.available.localeCompare(b.available), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Collateral', dataIndex: 'collateral', sorter: (a, b) => a.collateral.localeCompare(b.collateral), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Real. Mtm', dataIndex: 'realmtm', sorter: (a, b) => a.realmtm.localeCompare(b.realmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Unreal. Mtm', dataIndex: 'unrealmtm', sorter: (a, b) => a.unrealmtm.localeCompare(b.unrealmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Adhoc', dataIndex: 'adhoc', sorter: (a, b) => a.adhoc.localeCompare(b.adhoc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Span', dataIndex: 'span', sorter: (a, b) => a.span.localeCompare(b.span), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Exposure', dataIndex: 'exposure', sorter: (a, b) => a.exposure.localeCompare(b.exposure), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Payin', dataIndex: 'payin', sorter: (a, b) => a.payin.localeCompare(b.payin), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Day', dataIndex: 'day', sorter: (a, b) => a.day.localeCompare(b.day), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Broker', dataIndex: 'broker', sorter: (a, b) => a.broker.localeCompare(b.broker), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
   ] : [];
 
   const firstColumn = {
@@ -201,46 +119,46 @@ const Margins: React.FC = () => {
   const columns = [firstColumn, ...extraColumns];
 
   const filterInputRow = (
-      <tr>
-        {columns.map((col) => {
-          if (col.dataIndex === 'pseAcc' && filteredData.length === 0) {
-            return <th key={col.dataIndex} />;
-          }
-  
-          const uniqueValues = Array.from(
-            new Set(initialData.map((item) => item[col.dataIndex]))
-          );
-  
-          return (
-            <th key={col.dataIndex}>
-              <Select
-                allowClear
-                showSearch
-                size="small"
-                style={{ width: '100%' }}
-                placeholder=""
-                value={filters[col.dataIndex] || undefined}
-                onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
-                filterOption={(input, option) =>
-                  (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
-                }
-              >
-                {uniqueValues.map((val) => (
-                  <Option key={val} value={val}>
-                    {val}
-                  </Option>
-                ))}
-              </Select>
-            </th>
-          );
-        })}
-      </tr>
+    <tr>
+      {columns.map((col) => {
+        if (col.dataIndex === 'pseAcc' && filteredData.length === 0) {
+          return <th key={col.dataIndex} />;
+        }
+
+        const uniqueValues = Array.from(
+          new Set(initialData.map((item) => item[col.dataIndex]))
+        );
+
+        return (
+          <th key={col.dataIndex}>
+            <Select
+              allowClear
+              showSearch
+              size="small"
+              style={{ width: '100%' }}
+              placeholder=""
+              value={filters[col.dataIndex] || undefined}
+              onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
+              filterOption={(input, option) =>
+                (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {uniqueValues.map((val) => (
+                <Option key={val} value={val}>
+                  {val}
+                </Option>
+              ))}
+            </Select>
+          </th>
+        );
+      })}
+    </tr>
   );
 
   return (
     <div style={{ padding: 16 }}>
       {/* Top Filter Buttons */}
-      <Row gutter={8} style={{ marginBottom: 12 }}>
+      <Row gutter={[8, 8]} style={{ marginBottom: 12, flexWrap: 'wrap' }}>
         <Col>
           <Tooltip title="Reset margins filter">
             <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button>
@@ -263,18 +181,20 @@ const Margins: React.FC = () => {
         </Col>
       </Row>
 
-      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col>
+
+      {/* Excel + CSV + Search Row */}
+      <Row gutter={[8, 8]} justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={24} md={12}>
           <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
           <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
         </Col>
-        <Col>
+        <Col xs={24} sm={24} md={12} style={{ textAlign: "right" }}>
           <Input
             placeholder="Search"
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 220 }}
           />
         </Col>
       </Row>

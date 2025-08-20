@@ -6,7 +6,8 @@ import {
   Tooltip,
   Row,
   Col,
-  Select
+  Select,
+  Space
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -84,10 +85,9 @@ const Holdings: React.FC = () => {
     pseAcc: 'No data available in table.',
   };
 
-const tableData = [mergedRow, ...filteredData];
+  const tableData = [mergedRow, ...filteredData];
 
   const extraColumns = filteredData.length > 0 ? [
-    
     {
       title: 'Trd Acc',
       dataIndex: 'trdAcc',
@@ -109,7 +109,7 @@ const tableData = [mergedRow, ...filteredData];
     {
       title: 'Tot. Qty',
       dataIndex: 'totqty',
-      sorter: (a, b) => a.totqty.localeCompare(b.totqty),      
+      sorter: (a, b) => a.totqty - b.totqty,      
       render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
     },
     {
@@ -127,13 +127,13 @@ const tableData = [mergedRow, ...filteredData];
     {
       title: 'Quantity',
       dataIndex: 'quantity',
-      sorter: (a, b) => a.quantity.localeCompare(b.quantity),
+      sorter: (a, b) => a.quantity - b.quantity,
       render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
     },
     {
       title: 'T1. Qty',
       dataIndex: 't1qty',
-      sorter: (a, b) => a.t1qty.localeCompare(b.t1qty),
+      sorter: (a, b) => a.t1qty - b.t1qty,
       render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
     },
     {
@@ -175,7 +175,7 @@ const tableData = [mergedRow, ...filteredData];
     {
       title: 'Collateral Qty.',
       dataIndex: 'colqty',
-      sorter: (a, b) => a.colqty.localeCompare(b.colqty),
+      sorter: (a, b) => a.colqty - b.colqty,
       render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _
     },
     {
@@ -234,7 +234,6 @@ const tableData = [mergedRow, ...filteredData];
 
   const columns = [firstColumn, ...extraColumns];
   
-
   const filterInputRow = (
     <tr>
       {columns.map((col) => {
@@ -274,36 +273,30 @@ const tableData = [mergedRow, ...filteredData];
 
   return (
     <div style={{ padding: 16 }}>
-      <Row gutter={8} style={{ marginBottom: 12 }}>
+      <Row style={{ marginBottom: 12 }}>
         <Col>
-          <Tooltip title="Reset holdings filter">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button>
-          </Tooltip>
+          <Space size={8}>
+            <Tooltip title="Reset holdings filter">
+              <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button>
+            </Tooltip>
+            <Tooltip title="Select all holdings">
+              <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Select</Button>
+            </Tooltip>
+            <Tooltip title="Deselect all holdings">
+              <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Deselect</Button>
+            </Tooltip>
+            <Tooltip title="Square-off">
+              <Button style={{ backgroundColor: "#f77d5c", color: "#fff" }}>Square-Off</Button>
+            </Tooltip>
+            <Tooltip title="Increase">
+              <Button style={{ backgroundColor: "#00b96b", color: "#fff" }}>Increase</Button>
+            </Tooltip>
+          </Space>
         </Col>
-        <Col>
-          <Tooltip title="Select all holdings">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Select</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Deselect all holdings">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Deselect</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Square-off">
-            <Button style={{ backgroundColor: '#f77d5c', color: '#fff' }}>Square-Off</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Increase">
-            <Button style={{ backgroundColor: '#00b96b', color: '#fff' }}>Increase</Button>
-          </Tooltip>
-        </Col>
-      </Row>  
+      </Row>
 
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col>
+        <Col xs={24} sm={24} md={12}>
           <Tooltip title="Download in Excel format">
             <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
           </Tooltip>
@@ -311,17 +304,16 @@ const tableData = [mergedRow, ...filteredData];
             <Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
           </Tooltip>
         </Col>
-        <Col>
+        <Col xs={24} sm={24} md={12} style={{ marginTop: 8, textAlign: "right" }}>
           <Input
-              placeholder="Search"
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-              style={{ width: 200 }}
+            placeholder="Search"
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 200, maxWidth: "100%" }}
           />
         </Col>
       </Row>
-
 
       <Table
         columns={columns}
