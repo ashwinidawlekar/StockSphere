@@ -16,7 +16,7 @@ import { SearchOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 const Orders: React.FC = () => {
-  const initialData = [];
+  const initialData: React.SetStateAction<any[]> = [];
 
   const [data, setData] = useState(initialData);
   const [searchText, setSearchText] = useState('');

@@ -5,9 +5,9 @@ import Navbar from './Components/Navbar.tsx'
 import Activity from './Pages/AutoTrader/Activity.tsx'
 //import { httpClient } from './Services/apiService.ts'
 import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
-import Account from './Pages/User/Account';
-import Profile from './Pages/User/Profile';
-import Logout from './Pages/User/Logout';
+import Account from './Pages/User//Account/Account.tsx';
+import Profile from './Pages/User/Profile/Profile.tsx';
+import Logout from './Pages/User/Logout/Logout.tsx';
 import Positions from "./Pages/Trading/Portfolio/Positions.tsx";
 import Orders from "./Pages/Trading/Portfolio/Orders.tsx";
 import Margins from "./Pages/Trading/Portfolio/Margins.tsx";
@@ -21,27 +21,6 @@ import Screener from "./Pages/Screener/Screener";
 // import User from './pages/User'
 
 const App: React.FC = () => {
-
-  // useEffect(() => {
-  //   const fetchOrders = async () => {
-  //     try {
-  //       const data = await httpClient('/api/trading/readPlatformPositions', {
-  //         method: 'GET',
-  //         params: {
-  //           pseudoAccount: '53135052',
-  //         },
-  //         headers: {
-  //           'api-key': 'f0a63155-883b-4fb5-b73f-8fefe03f4e4d',
-  //         },
-  //       });
-
-  //       console.log('API Data:', data);
-  //     } catch (err) {
-  //       console.error('Error:', err);
-  //     }
-  //   };
-  //   fetchOrders()
-  // }, [])
 
   return (
     <>
