@@ -115,7 +115,6 @@ const Orders: React.FC = () => {
 
   return (
     <div style={{ padding: 16 }}>
-      {/* Top Action Buttons */}
       <Row gutter={[8, 8]} align="middle" wrap={true}>
         <Col>
           <Tooltip title="Order Status">
@@ -211,7 +210,6 @@ const Orders: React.FC = () => {
         }}
       />
 
-      {/* Summary [COUNT] */}
       <Card style={{ marginTop: 24 }}>
         <h3 style={{ color: '#00b2b2', fontWeight: 'bold' }}>ORDERS SUMMARY [COUNT]</h3>
         <Row justify="space-between" gutter={[16, 16]}>
@@ -235,7 +233,6 @@ const Orders: React.FC = () => {
         </Row>
       </Card>
 
-      {/* Summary [QUANTITY] */}
       <Card style={{ marginTop: 16 }}>
         <h3 style={{ color: '#A9A9A9', fontWeight: 'bold' }}>ORDERS SUMMARY [QUANTITY]</h3>
         <Row justify="space-between" gutter={[16, 16]}>

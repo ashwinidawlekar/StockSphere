@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   Input,
@@ -36,7 +36,6 @@ const Margins: React.FC = () => {
     }
   ];
 
-  const [data, setData] = useState(initialData);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState(initialData);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
@@ -44,16 +43,19 @@ const Margins: React.FC = () => {
   const handleSearch = (value: string) => {
     const lower = value.toLowerCase();
     setSearchText(lower);
-    if (value.trim() === '') {
+
+    if (!value.trim()) {
       setFilteredData(initialData);
-    } else {
-      const filtered = initialData.filter((item) =>
+      return;
+    }
+
+    setFilteredData(
+      initialData.filter(item =>
         Object.values(item).some(val =>
           String(val).toLowerCase().includes(lower)
         )
-      );
-      setFilteredData(filtered);
-    }
+      )
+    );
   };
 
   const handleColumnFilter = (value: string, dataIndex: string) => {
@@ -61,10 +63,11 @@ const Margins: React.FC = () => {
     setFilters(newFilters);
 
     let updated = initialData;
+
     Object.keys(newFilters).forEach((key) => {
       const searchValue = newFilters[key].toLowerCase();
       if (searchValue) {
-        updated = updated.filter((item) =>
+        updated = updated.filter((item: any) =>
           String(item[key]).toLowerCase().includes(searchValue)
         );
       }
@@ -82,22 +85,22 @@ const Margins: React.FC = () => {
   const tableData = [mergedRow, ...filteredData];
 
   const extraColumns = filteredData.length > 0 ? [
-    { title: 'Trd Acc', dataIndex: 'trdAcc', sorter: (a, b) => a.trdAcc.localeCompare(b.trdAcc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Category', dataIndex: 'category', sorter: (a, b) => a.category.localeCompare(b.category), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Total', dataIndex: 'total', sorter: (a, b) => a.total.localeCompare(b.total), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Net', dataIndex: 'net', sorter: (a, b) => a.net.localeCompare(b.net), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Funds', dataIndex: 'funds', sorter: (a, b) => a.funds.localeCompare(b.funds), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Utilized', dataIndex: 'utilized', sorter: (a, b) => a.utilized.localeCompare(b.utilized), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Available', dataIndex: 'available', sorter: (a, b) => a.available.localeCompare(b.available), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Collateral', dataIndex: 'collateral', sorter: (a, b) => a.collateral.localeCompare(b.collateral), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Real. Mtm', dataIndex: 'realmtm', sorter: (a, b) => a.realmtm.localeCompare(b.realmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Unreal. Mtm', dataIndex: 'unrealmtm', sorter: (a, b) => a.unrealmtm.localeCompare(b.unrealmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Adhoc', dataIndex: 'adhoc', sorter: (a, b) => a.adhoc.localeCompare(b.adhoc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Span', dataIndex: 'span', sorter: (a, b) => a.span.localeCompare(b.span), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Exposure', dataIndex: 'exposure', sorter: (a, b) => a.exposure.localeCompare(b.exposure), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Payin', dataIndex: 'payin', sorter: (a, b) => a.payin.localeCompare(b.payin), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Day', dataIndex: 'day', sorter: (a, b) => a.day.localeCompare(b.day), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Broker', dataIndex: 'broker', sorter: (a, b) => a.broker.localeCompare(b.broker), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Trd Acc', dataIndex: 'trdAcc', sorter: (a: any, b: any) => a.trdAcc.localeCompare(b.trdAcc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Category', dataIndex: 'category', sorter: (a: any, b: any) => a.category.localeCompare(b.category), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Total', dataIndex: 'total', sorter: (a: any, b: any) => a.total.localeCompare(b.total), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Net', dataIndex: 'net', sorter: (a: any, b: any) => a.net.localeCompare(b.net), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Funds', dataIndex: 'funds', sorter: (a: any, b: any) => a.funds.localeCompare(b.funds), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Utilized', dataIndex: 'utilized', sorter: (a: any, b: any) => a.utilized.localeCompare(b.utilized), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Available', dataIndex: 'available', sorter: (a: any, b: any) => a.available.localeCompare(b.available), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Collateral', dataIndex: 'collateral', sorter: (a: any, b: any) => a.collateral.localeCompare(b.collateral), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Real. Mtm', dataIndex: 'realmtm', sorter: (a: any, b: any) => a.realmtm.localeCompare(b.realmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Unreal. Mtm', dataIndex: 'unrealmtm', sorter: (a: any, b: any) => a.unrealmtm.localeCompare(b.unrealmtm), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Adhoc', dataIndex: 'adhoc', sorter: (a: any, b: any) => a.adhoc.localeCompare(b.adhoc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Span', dataIndex: 'span', sorter: (a: any, b: any) => a.span.localeCompare(b.span), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Exposure', dataIndex: 'exposure', sorter: (a: any, b: any) => a.exposure.localeCompare(b.exposure), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Payin', dataIndex: 'payin', sorter: (a: any, b: any) => a.payin.localeCompare(b.payin), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Day', dataIndex: 'day', sorter: (a: any, b: any) => a.day.localeCompare(b.day), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Broker', dataIndex: 'broker', sorter: (a: any, b: any) => a.broker.localeCompare(b.broker), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
   ] : [];
 
   const firstColumn = {
@@ -106,13 +109,7 @@ const Margins: React.FC = () => {
     sorter: (a: any, b: any) => a.pseAcc?.localeCompare(b.pseAcc),
     render: (_: any, row: any) =>
       row.isMergedRow
-        ? {
-            children: row.pseAcc,
-            props: {
-              colSpan: filteredData.length > 0 ? 17 : 1,
-              style: { textAlign: 'center', fontWeight: 'bold', background: '#f5f5f5' }
-            }
-          }
+        ? { children: row.pseAcc, props: { colSpan: filteredData.length > 0 ? 17 : 1, style: { textAlign: 'center', fontWeight: 'bold', background: '#f5f5f5' } } }
         : _
   };
 
@@ -120,13 +117,13 @@ const Margins: React.FC = () => {
 
   const filterInputRow = (
     <tr>
-      {columns.map((col) => {
+      {columns.map((col: any) => {
         if (col.dataIndex === 'pseAcc' && filteredData.length === 0) {
           return <th key={col.dataIndex} />;
         }
 
         const uniqueValues = Array.from(
-          new Set(initialData.map((item) => item[col.dataIndex]))
+          new Set(initialData.map((item) => (item as any)[col.dataIndex]))
         );
 
         return (
@@ -136,17 +133,11 @@ const Margins: React.FC = () => {
               showSearch
               size="small"
               style={{ width: '100%' }}
-              placeholder=""
               value={filters[col.dataIndex] || undefined}
               onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
-              filterOption={(input, option) =>
-                (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
-              }
             >
               {uniqueValues.map((val) => (
-                <Option key={val} value={val}>
-                  {val}
-                </Option>
+                <Option key={val} value={val}>{val}</Option>
               ))}
             </Select>
           </th>
@@ -157,71 +148,14 @@ const Margins: React.FC = () => {
 
   return (
     <div style={{ padding: 16 }}>
-      {/* Top Filter Buttons */}
-      <Row gutter={[8, 8]} style={{ marginBottom: 12, flexWrap: 'wrap' }}>
-        <Col>
-          <Tooltip title="Reset margins filter">
-            <Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Show EQUITY margins">
-            <Button style={{ backgroundColor: '#00b96b', color: '#fff', fontWeight: 500 }}>Equity</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Show COMMODITY margins">
-            <Button style={{ backgroundColor: '#00b96b', color: '#fff', fontWeight: 500 }}>Commodity</Button>
-          </Tooltip>
-        </Col>
-        <Col>
-          <Tooltip title="Show combined margins">
-            <Button style={{ backgroundColor: '#00b96b', color: '#fff', fontWeight: 500 }}>Total</Button>
-          </Tooltip>
-        </Col>
-      </Row>
-
-
-      {/* Excel + CSV + Search Row */}
-      <Row gutter={[8, 8]} justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={24} md={12}>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
-        </Col>
-        <Col xs={24} sm={24} md={12} style={{ textAlign: "right" }}>
-          <Input
-            placeholder="Search"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: "100%", maxWidth: 220 }}
-          />
-        </Col>
-      </Row>
-
-      {/* Table with Merged Row */}
       <Table
         columns={columns}
         dataSource={tableData}
         pagination={false}
         bordered
         scroll={{ x: 'max-content' }}
-        locale={{
-          emptyText: (
-            <div
-              style={{
-                textAlign: 'center',
-                fontWeight: 'bold',
-                color: '#3d3d3d',
-              }}
-            >
-              No data available in table
-            </div>
-          ),
-        }}
         components={{
           header: {
-            cell: (props: any) => <th {...props} />,
             row: (props: any) => (
               <>
                 <tr {...props} />

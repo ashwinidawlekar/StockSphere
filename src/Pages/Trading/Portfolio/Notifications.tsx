@@ -125,7 +125,6 @@ const Notifications: React.FC = () => {
 
   return (
     <div style={{ padding: 16 }}>
-      {/* Top Controls */}
       <Row gutter={[8, 8]} align="middle" style={{ flexWrap: 'wrap' }}>
         <Col xs={24} sm={12} md={6}>
           <Tooltip title="Reset notifications filter">
@@ -185,7 +184,6 @@ const Notifications: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Dropdown search after headers */}
       <Row justify="end" style={{ marginBottom: 16 }} gutter={[8, 8]}>
         <Col xs={24} sm={12} md={6}>
           <Select

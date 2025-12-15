@@ -1,10 +1,9 @@
 import React from 'react';
 import { Row, Col, Typography, Card } from 'antd';
 import StatCard from '../../../Components/StatsCards.tsx';
-// import { Icon } from '@iconify/react';
 
 const { Title, Text } = Typography;
-const PositionAnalyticsSummary = (props) => {
+const PositionAnalyticsSummary = (props: { title: any; }) => {
     const { title } = props
     return (<div>
         <Card style={{ margin: 24, borderRadius: 12 }}>

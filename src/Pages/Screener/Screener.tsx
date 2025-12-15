@@ -37,7 +37,6 @@ interface TableData {
   detectedAt: string;
 }
 
-// ✅ Breakout Table Columns
 const breakoutColumns: ColumnsType<TableData> = [
   { title: "", key: "index", width: 60, align: "center", render: (_: any, __: TableData, index: number) => index + 1 },
   { title: "Symbol", dataIndex: "symbol", key: "symbol" },
@@ -53,7 +52,6 @@ const breakoutColumns: ColumnsType<TableData> = [
   { title: "Detected At", dataIndex: "detectedAt", key: "detectedAt" },
 ];
 
-// ✅ Breakdown Table Columns
 const breakdownColumns: ColumnsType<TableData> = [
   { title: "", key: "index", width: 60, align: "center", render: (_: any, __: TableData, index: number) => index + 1 },
   { title: "Symbol", dataIndex: "symbol", key: "symbol" },
@@ -109,13 +107,13 @@ const Screener: React.FC = () => {
   const screens = useBreakpoint();
 
   useEffect(() => {
-    setRemaining(interval); // reset timer whenever interval changes
+    setRemaining(interval); 
 
     const timer = setInterval(() => {
       setRemaining((prev) => {
         if (prev <= 1) {
           console.log("🔄 Auto-refresh triggered!");
-          return interval; // reset countdown
+          return interval; 
         }
         return prev - 1;
       });
@@ -133,7 +131,6 @@ const Screener: React.FC = () => {
         <span style={{ fontWeight: "normal" }}>(with Debugging)</span>
       </Title>
 
-      {/* Interval Setting */}
       <Row align="middle" style={{ marginBottom: 12 }}>
         <Col flex="none">
           <ClockCircleOutlined style={{ marginRight: 6, color: "lightblue" }} />
@@ -154,7 +151,6 @@ const Screener: React.FC = () => {
         tooltip={{ formatter: (val) => `${val}` }}
       />
 
-      {/* Progress bar with countdown */}
       <div style={{ marginTop: 20 }}>
         <Progress percent={percent} status="active" />
         <Text type="secondary">
@@ -162,7 +158,6 @@ const Screener: React.FC = () => {
         </Text>
       </div>
 
-      {/* Buttons Vertical Layout */}
       <Space direction="vertical" style={{ marginTop: 20, width: "100%" }}>
         <Button
           size="middle"
@@ -191,11 +186,8 @@ const Screener: React.FC = () => {
           Clear Historical Data
         </Button>
       </Space>
-
-
       <Divider />
 
-      {/* Breakout Table */}
       <Title level={3} style={{ color: "black" }}>✅ Live Breakout Results</Title>
       <Table<TableData>
         columns={breakoutColumns}
@@ -205,10 +197,8 @@ const Screener: React.FC = () => {
         size="small"
         scroll={{ x: "max-content" }}
       />
-
       <Divider />
 
-      {/* Breakdown Table */}
       <Title level={3} style={{ color: "black" }}>✅ Live Breakdown Results</Title>
       <Table<TableData>
         columns={breakdownColumns}

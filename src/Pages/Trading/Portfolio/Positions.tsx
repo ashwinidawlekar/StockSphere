@@ -31,9 +31,9 @@ const Positions: React.FC = () => {
       sellqty: 0,
       buyval: "₹0.00",
       sellval: "₹0.00",
-      netval: "",
-      bavg: "",
-      savg: "",
+      netval: "₹0.00",
+      bavg: "₹0.00",
+      savg: "₹0.00",
       state: "",
       direction: "",
       type: "",
@@ -71,7 +71,7 @@ const Positions: React.FC = () => {
       const searchValue = newFilters[key].toLowerCase();
       if (searchValue) {
         updated = updated.filter((item) =>
-          String(item[key]).toLowerCase().includes(searchValue)
+          String((item as any)[key]).toLowerCase().includes(searchValue)
         );
       }
     });
@@ -79,35 +79,35 @@ const Positions: React.FC = () => {
     setFilteredData(updated);
   };
 
-  const parseCurrency = (val: string): number =>
-    parseFloat(val.replace(/[^0-9.-]+/g, '')) || 0;
+  const parseCurrency = (val: any): number =>
+    parseFloat(String(val).replace(/[^0-9.-]+/g, '')) || 0;
 
   const columns = [
-    { title: "M2M", dataIndex: "m2m", width: 100, sorter: (a, b) => parseCurrency(a.m2m) - parseCurrency(b.m2m), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
-    { title: "PnL", dataIndex: "pnl", width: 100, sorter: (a, b) => parseCurrency(a.pnl) - parseCurrency(b.pnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
-    { title: "AT PnL", dataIndex: "atpnl", width: 100, sorter: (a, b) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
-    { title: 'Symbol', dataIndex: "symbol", width: 100, sorter: (a, b) => a.symbol.localeCompare(b.symbol) },
-    { title: "Real PL", dataIndex: "realpl", width: 100, sorter: (a, b) => parseCurrency(a.realpl) - parseCurrency(b.realpl) },
-    { title: "Unreal PL", dataIndex: "unrealpl", width: 100, sorter: (a, b) => parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl) },
-    { title: "Net Qty", dataIndex: "netqty", width: 100, sorter: (a, b) => a.netqty - b.netqty },
-    { title: "Ltp", dataIndex: "ltp", width: 100, sorter: (a, b) => parseCurrency(a.ltp) - parseCurrency(b.ltp) },
-    { title: "Buy Qty", dataIndex: "buyqty", width: 100, sorter: (a, b) => a.buyqty - b.buyqty },
-    { title: "Sell Qty", dataIndex: "sellqty", width: 100, sorter: (a, b) => a.sellqty - b.sellqty },
-    { title: "Buy Val", dataIndex: "buyval", width: 100, sorter: (a, b) => parseCurrency(a.buyval) - parseCurrency(b.buyval) },
-    { title: "Sell Val", dataIndex: "sellval", width: 100, sorter: (a, b) => parseCurrency(a.sellval) - parseCurrency(b.sellval) },
-    { title: "Net Val", dataIndex: "netval", width: 100, sorter: (a, b) => a.netval - b.netval },
-    { title: "B Avg Prc", dataIndex: "bavg", width: 100, sorter: (a, b) => a.bavg - b.bavg },
-    { title: "S Avg Prc", dataIndex: "savg", width: 100, sorter: (a, b) => a.savg - b.savg },
+    { key: 'm2m', title: "M2M", dataIndex: "m2m", width: 100, sorter: (a: any, b: any) => parseCurrency(a.m2m) - parseCurrency(b.m2m), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { key: 'pnl', title: "PnL", dataIndex: "pnl", width: 100, sorter: (a: any, b: any) => parseCurrency(a.pnl) - parseCurrency(b.pnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { key: 'atpnl', title: "AT PnL", dataIndex: "atpnl", width: 100, sorter: (a: any, b: any) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
+    { key: 'symbol', title: 'Symbol', dataIndex: "symbol", width: 100, sorter: (a: any, b: any) => String(a.symbol).localeCompare(String(b.symbol)) },
+    { key: 'realpl', title: "Real PL", dataIndex: "realpl", width: 100, sorter: (a: any, b: any) => parseCurrency(a.realpl) - parseCurrency(b.realpl) },
+    { key: 'unrealpl', title: "Unreal PL", dataIndex: "unrealpl", width: 100, sorter: (a: any, b: any) => parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl) },
+    { key: 'netqty', title: "Net Qty", dataIndex: "netqty", width: 100, sorter: (a: any, b: any) => Number(a.netqty) - Number(b.netqty) },
+    { key: 'ltp', title: "Ltp", dataIndex: "ltp", width: 100, sorter: (a: any, b: any) => parseCurrency(a.ltp) - parseCurrency(b.ltp) },
+    { key: 'buyqty', title: "Buy Qty", dataIndex: "buyqty", width: 100, sorter: (a: any, b: any) => Number(a.buyqty) - Number(b.buyqty) },
+    { key: 'sellqty', title: "Sell Qty", dataIndex: "sellqty", width: 100, sorter: (a: any, b: any) => Number(a.sellqty) - Number(b.sellqty) },
+    { key: 'buyval', title: "Buy Val", dataIndex: "buyval", width: 100, sorter: (a: any, b: any) => parseCurrency(a.buyval) - parseCurrency(b.buyval) },
+    { key: 'sellval', title: "Sell Val", dataIndex: "sellval", width: 100, sorter: (a: any, b: any) => parseCurrency(a.sellval) - parseCurrency(b.sellval) },
+    { key: 'netval', title: "Net Val", dataIndex: "netval", width: 100, sorter: (a: any, b: any) => parseCurrency(a.netval) - parseCurrency(b.netval) },
+    { key: 'bavg', title: "B Avg Prc", dataIndex: "bavg", width: 100, sorter: (a: any, b: any) => parseCurrency(a.bavg) - parseCurrency(b.bavg) },
+    { key: 'savg', title: "S Avg Prc", dataIndex: "savg", width: 100, sorter: (a: any, b: any) => parseCurrency(a.savg) - parseCurrency(b.savg) },
   ];
 
   const filterInputRow = (
-    <tr>
+    <tr key="filter-row">
       {columns.map((col) => {
         const uniqueValues = Array.from(
-          new Set(initialData.map((item) => item[col.dataIndex]).filter(Boolean))
+          new Set(initialData.map((item: any) => item[col.dataIndex]))
         );
         return (
-          <th key={col.dataIndex}>
+          <th key={String(col.dataIndex)}>
             <Select
               allowClear
               showSearch
@@ -117,12 +117,12 @@ const Positions: React.FC = () => {
               value={filters[col.dataIndex] || undefined}
               onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
               filterOption={(input, option) =>
-                (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+                String(option?.children).toLowerCase().includes(input.toLowerCase())
               }
             >
-              {uniqueValues.map((val) => (
-                <Option key={val} value={val}>
-                  {val}
+              {uniqueValues.map((val: any) => (
+                <Option key={String(val)} value={String(val)}>
+                  {String(val)}
                 </Option>
               ))}
             </Select>
@@ -134,62 +134,6 @@ const Positions: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Row gutter={[8, 8]} align="middle" style={{ marginBottom: 8 }} wrap>
-        <Col>
-          <Tooltip title="Category Of Positions">
-            <Select defaultValue="NET" style={{ width: 120 }}>
-              <Option value="NET">NET</Option>
-              <Option value="DAY">DAY</Option>
-            </Select>
-          </Tooltip>
-        </Col>
-
-        <Col>
-          <Tooltip title="Position State">
-            <Select defaultValue="ALL" style={{ width: 120 }}>
-              <Option value="ALL">ALL</Option>
-              <Option value="OPEN">OPEN</Option>
-              <Option value="CLOSED">CLOSED</Option>
-            </Select>
-          </Tooltip>
-        </Col>
-
-        <Col>
-          <Tooltip title="Position Direction">
-            <Select defaultValue="ALL" style={{ width: 120 }}>
-              <Option value="ALL">ALL</Option>
-              <Option value="LONG">LONG</Option>
-              <Option value="SHORT">SHORT</Option>
-              <Option value="NEUTRAL">NEUTRAL</Option>
-            </Select>
-          </Tooltip>
-        </Col>
-
-        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Reset</Button></Col>
-        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Select</Button></Col>
-        <Col><Button style={{ backgroundColor: "#6e6e6e", color: "#fff" }}>Deselect</Button></Col>
-        <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Pos. Mkt.</Button></Col>
-        <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Pos.</Button></Col>
-        <Col><Button style={{ background: "#f77d5c", color: "#fff" }}>Sq. Acc.</Button></Col>
-      </Row>
-
-      <Row gutter={[8, 8]} justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={24} md={12}>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>Excel</Button>
-          <Button style={{ fontWeight: 'bold', marginRight: 8, backgroundColor: '#36454F', color: '#fff' }}>CSV</Button>
-        </Col>
-        <Col xs={24} sm={24} md={12} style={{ textAlign: "right" }}>
-          <Input
-            placeholder="Search"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: "100%", maxWidth: 220 }}
-          />
-        </Col>
-      </Row>
-
-      {/* Table */}
       <Table
         columns={columns}
         dataSource={filteredData}
@@ -200,12 +144,14 @@ const Positions: React.FC = () => {
         components={{
           header: {
             cell: (props: any) => <th {...props} />,
-            row: (props: any) => (
-              <>
-                <tr {...props} />
-                {filterInputRow}
-              </>
-            ),
+            wrapper: (props: any) => {
+              return (
+                <thead {...props}>
+                  {props.children}
+                  {filterInputRow}
+                </thead>
+              );
+            },
           },
           body: {
             wrapper: (props: any) => {
@@ -233,8 +179,6 @@ const Positions: React.FC = () => {
           },
         }}
       />
-
-      {/* POSITIONS SUMMARY */}
       <Card
         title={<span style={{ color: "#00968f", fontWeight: "bold" }}>POSITIONS SUMMARY</span>}
         style={{ marginTop: 24, background: "#f4faff", border: "1px solid #d9d9d9" }}

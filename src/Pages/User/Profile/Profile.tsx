@@ -6,7 +6,7 @@ const { Title } = Typography;
 const Profile = () => {
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
+  const onFinish = (values: any) => {
     console.log('Submitted:', values);
     localStorage.setItem('userProfile', JSON.stringify(values));
     message.success('Profile saved successfully!');
