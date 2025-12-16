@@ -3,7 +3,7 @@ import { Table, Input, Button, Space } from 'antd';
 import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 
-interface SmartTableProps extends TableProps<any> {
+interface SmartTableProps extends Omit<TableProps<any>, 'title'> {
     title?: string;
     exportButtons?: boolean;
     searchable?: boolean;

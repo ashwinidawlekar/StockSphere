@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   Input,
@@ -8,10 +8,13 @@ import {
   Col,
   Card,
   Tooltip,
-} from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
+
+const greyBtn = { background: "#6e6e6e", color: "#fff" };
+const orangeBtn = { background: "#ff8c5a", color: "#fff" };
 
 const Positions: React.FC = () => {
   const initialData = [
@@ -25,8 +28,6 @@ const Positions: React.FC = () => {
       unrealpl: "",
       netqty: 0,
       ltp: "",
-      pseacc: "",
-      trdacc: "",
       buyqty: 0,
       sellqty: 0,
       buyval: "₹0.00",
@@ -34,53 +35,50 @@ const Positions: React.FC = () => {
       netval: "₹0.00",
       bavg: "₹0.00",
       savg: "₹0.00",
-      state: "",
-      direction: "",
-      type: "",
-      category: "",
-      broker: "",
     },
   ];
 
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
   const [filteredData, setFilteredData] = useState(initialData);
 
-  const handleSearch = (value: string) => {
-    const lower = value.toLowerCase();
-    setSearchText(value);
+  const [netType, setNetType] = useState("NET");
+  const [openType, setOpenType] = useState("ALL");
+  const [positionType, setPositionType] = useState("ALL");
 
-    if (value.trim() === '') {
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    if (!value) {
       setFilteredData(initialData);
-    } else {
-      const filtered = initialData.filter((item) =>
-        Object.values(item).some(val =>
-          String(val).toLowerCase().includes(lower)
-        )
-      );
-      setFilteredData(filtered);
+      return;
     }
+    const lower = value.toLowerCase();
+    setFilteredData(
+      initialData.filter((item) =>
+        Object.values(item).some((v) =>
+          String(v).toLowerCase().includes(lower)
+        )
+      )
+    );
   };
 
-  const handleColumnFilter = (value: string, dataIndex: string) => {
-    const newFilters = { ...filters, [dataIndex]: value };
+  const handleColumnFilter = (value: string, key: string) => {
+    const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
 
-    let updated = initialData;
-    Object.keys(newFilters).forEach((key) => {
-      const searchValue = newFilters[key].toLowerCase();
-      if (searchValue) {
-        updated = updated.filter((item) =>
-          String((item as any)[key]).toLowerCase().includes(searchValue)
+    let data = initialData;
+    Object.keys(newFilters).forEach((k) => {
+      if (newFilters[k]) {
+        data = data.filter((row: any) =>
+          String(row[k]).toLowerCase().includes(newFilters[k].toLowerCase())
         );
       }
     });
-
-    setFilteredData(updated);
+    setFilteredData(data);
   };
 
-  const parseCurrency = (val: any): number =>
-    parseFloat(String(val).replace(/[^0-9.-]+/g, '')) || 0;
+  const parseCurrency = (val: any) =>
+    parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
 
   const columns = [
     { key: 'm2m', title: "M2M", dataIndex: "m2m", width: 100, sorter: (a: any, b: any) => parseCurrency(a.m2m) - parseCurrency(b.m2m), onHeaderCell: () => ({ style: { backgroundColor: '#fffac8' } }) },
@@ -100,86 +98,115 @@ const Positions: React.FC = () => {
     { key: 'savg', title: "S Avg Prc", dataIndex: "savg", width: 100, sorter: (a: any, b: any) => parseCurrency(a.savg) - parseCurrency(b.savg) },
   ];
 
-  const filterInputRow = (
-    <tr key="filter-row">
-      {columns.map((col) => {
-        const uniqueValues = Array.from(
-          new Set(initialData.map((item: any) => item[col.dataIndex]))
-        );
-        return (
-          <th key={String(col.dataIndex)}>
-            <Select
-              allowClear
-              showSearch
-              size="small"
-              style={{ width: '100%' }}
-              placeholder=""
-              value={filters[col.dataIndex] || undefined}
-              onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
-              filterOption={(input, option) =>
-                String(option?.children).toLowerCase().includes(input.toLowerCase())
-              }
-            >
-              {uniqueValues.map((val: any) => (
-                <Option key={String(val)} value={String(val)}>
-                  {String(val)}
-                </Option>
-              ))}
-            </Select>
-          </th>
-        );
-      })}
+  const filterRow = (
+    <tr>
+      {columns.map((col) => (
+        <th key={col.dataIndex}>
+          <Select
+            allowClear
+            size="small"
+            style={{ width: "100%" }}
+            value={filters[col.dataIndex]}
+            onChange={(v) => handleColumnFilter(v || "", col.dataIndex)}
+          />
+        </th>
+      ))}
     </tr>
   );
 
   return (
     <div style={{ padding: 24 }}>
+      <Row gutter={10} align="middle" style={{ marginBottom: 10 }}>
+        <Col>
+          <Tooltip title="Category Of Positions (Keep it NET, if you are not sure)">
+            <Select value={netType} style={{ width: 90 }} onChange={setNetType}>
+              <Option value="DAY">DAY</Option>
+              <Option value="NET">NET</Option>
+            </Select>
+          </Tooltip>
+        </Col>
+
+        <Col>
+          <Tooltip title="Position State">
+            <Select value={openType} style={{ width: 100 }} onChange={setOpenType}>
+              <Option value="ALL">ALL</Option>
+              <Option value="OPEN">OPEN</Option>
+              <Option value="CLOSED">CLOSED</Option>
+            </Select>
+          </Tooltip>
+        </Col>
+
+        <Col>
+          <Tooltip title="Position Direction">
+            <Select value={positionType} style={{ width: 110 }} onChange={setPositionType}>
+              <Option value="ALL">ALL</Option>
+              <Option value="LONG">LONG</Option>
+              <Option value="SHORT">SHORT</Option>
+              <Option value="NEUTRAL">NEUTRAL</Option>
+            </Select>
+          </Tooltip>
+        </Col>
+
+        <Col><Tooltip title="Reset position filters"><Button style={greyBtn}>Reset</Button></Tooltip></Col>
+        <Col><Tooltip title="Select all positions (if filtered, only filtered positions will be selected)"><Button style={greyBtn}>Select</Button></Tooltip></Col>
+        <Col><Tooltip title="Deselect all positions"><Button style={greyBtn}>Deselect</Button></Tooltip></Col>
+
+        <Col><Tooltip title="Square-Off one or more positions at market rate!"><Button style={orangeBtn}>Sq. Pos. Mkt.</Button></Tooltip></Col>
+        <Col><Tooltip title="Square-Off with custom options (useful when normal square-off fails!)"><Button style={orangeBtn}>Sq. Pos.</Button></Tooltip></Col>
+        <Col><Tooltip title="Square-Off one or more accounts (portfolios) with a single click!"><Button style={orangeBtn}>Sq. Acc.</Button></Tooltip></Col>
+
+        <Col flex="auto" />
+
+        <Col>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Search"
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 200 }}
+          />
+        </Col>
+      </Row>
+
+      <Row gutter={8} style={{ marginBottom: 8 }}>
+        <Col><Tooltip title="Download in Excel format"><Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>Excel</Button></Tooltip></Col>
+        <Col><Tooltip title="Download in Csv format"><Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>CSV</Button></Tooltip></Col>
+      </Row>
+
       <Table
+        bordered
+        pagination={false}
         columns={columns}
         dataSource={filteredData}
-        pagination={false}
-        bordered
-        scroll={{ x: 'max-content' }}
-        locale={{ emptyText: '' }}
+        scroll={{ x: "max-content" }}
+        locale={{ emptyText: "" }}
         components={{
           header: {
-            cell: (props: any) => <th {...props} />,
-            wrapper: (props: any) => {
-              return (
-                <thead {...props}>
-                  {props.children}
-                  {filterInputRow}
-                </thead>
-              );
-            },
+            wrapper: (props: any) => (
+              <thead {...props}>
+                {props.children}
+                {filterRow}
+              </thead>
+            ),
           },
           body: {
-            wrapper: (props: any) => {
-              if (filteredData.length === 0) {
-                return (
-                  <tbody>
-                    <tr>
-                      <td
-                        colSpan={columns.length}
-                        style={{
-                          textAlign: 'center',
-                          fontWeight: 'bold',
-                          padding: '12px',
-                          backgroundColor: '#fafafa',
-                        }}
-                      >
-                        No Data Available in table
-                      </td>
-                    </tr>
-                  </tbody>
-                );
-              }
-              return <tbody {...props} />;
-            },
+            wrapper: (props: any) =>
+              filteredData.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={columns.length} style={{ textAlign: "center", fontWeight: "bold" }}>
+                      No Data Available in table
+                    </td>
+                  </tr>
+                </tbody>
+              ) : (
+                <tbody {...props} />
+              ),
           },
         }}
       />
-      <Card
+
+       <Card
         title={<span style={{ color: "#00968f", fontWeight: "bold" }}>POSITIONS SUMMARY</span>}
         style={{ marginTop: 24, background: "#f4faff", border: "1px solid #d9d9d9" }}
       >

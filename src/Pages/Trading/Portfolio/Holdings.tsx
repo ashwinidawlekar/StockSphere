@@ -7,11 +7,14 @@ import {
   Row,
   Col,
   Select,
-  Space
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
+
+const greyBtn = { background: '#6e6e6e', color: '#fff' };
+const greenBtn = { background: '#11c26d', color: '#fff' };
+const orangeBtn = { background: '#ff8c5a', color: '#fff' };
 
 const Holdings: React.FC = () => {
   const initialData = [
@@ -39,7 +42,7 @@ const Holdings: React.FC = () => {
       day: 'Monday',
       platform: 'Kite',
       broker: 'Zerodha',
-    }
+    },
   ];
 
   const [searchText, setSearchText] = useState('');
@@ -56,7 +59,7 @@ const Holdings: React.FC = () => {
     }
 
     setFilteredData(
-      initialData.filter((item) =>
+      initialData.filter(item =>
         Object.values(item).some(val =>
           String(val).toLowerCase().includes(lower)
         )
@@ -69,12 +72,10 @@ const Holdings: React.FC = () => {
     setFilters(newFilters);
 
     let updated = initialData;
-
     Object.keys(newFilters).forEach((key) => {
-      const searchValue = newFilters[key].toLowerCase();
-      if (searchValue) {
+      if (newFilters[key]) {
         updated = updated.filter((item: any) =>
-          String(item[key]).toLowerCase().includes(searchValue)
+          String(item[key]).toLowerCase().includes(newFilters[key].toLowerCase())
         );
       }
     });
@@ -92,26 +93,19 @@ const Holdings: React.FC = () => {
 
   const extraColumns = filteredData.length > 0 ? [
     { title: 'Trd Acc', dataIndex: 'trdAcc', sorter: (a: any, b: any) => a.trdAcc.localeCompare(b.trdAcc), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Exchnage', dataIndex: 'exchange', sorter: (a: any, b: any) => a.exchange.localeCompare(b.exchange), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'Exchange', dataIndex: 'exchange', sorter: (a: any, b: any) => a.exchange.localeCompare(b.exchange), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Symbol', dataIndex: 'symbol', sorter: (a: any, b: any) => a.symbol.localeCompare(b.symbol), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Tot. Qty', dataIndex: 'totqty', sorter: (a: any, b: any) => a.totqty - b.totqty, render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'LTP', dataIndex: 'ltp', sorter: (a: any, b: any) => a.ltp.localeCompare(b.ltp), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Curr. Val.', dataIndex: 'currval', sorter: (a: any, b: any) => a.currval.localeCompare(b.currval), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Quantity', dataIndex: 'quantity', sorter: (a: any, b: any) => a.quantity - b.quantity, render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'T1. Qty', dataIndex: 't1qty', sorter: (a: any, b: any) => a.t1qty - b.t1qty, render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'T1 Qty', dataIndex: 't1qty', sorter: (a: any, b: any) => a.t1qty - b.t1qty, render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'PnL', dataIndex: 'pnl', sorter: (a: any, b: any) => a.pnl.localeCompare(b.pnl), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Product', dataIndex: 'product', sorter: (a: any, b: any) => a.product.localeCompare(b.product), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'NSE-Symbol', dataIndex: 'nsesymbol', sorter: (a: any, b: any) => a.nsesymbol.localeCompare(b.nsesymbol), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'BSE- Symbol', dataIndex: 'bsesymbol', sorter: (a: any, b: any) => a.bsesymbol.localeCompare(b.bsesymbol), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
+    { title: 'BSE-Symbol', dataIndex: 'bsesymbol', sorter: (a: any, b: any) => a.bsesymbol.localeCompare(b.bsesymbol), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'ISIN', dataIndex: 'isin', sorter: (a: any, b: any) => a.isin.localeCompare(b.isin), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
     { title: 'Inst. Token', dataIndex: 'insttoken', sorter: (a: any, b: any) => a.insttoken.localeCompare(b.insttoken), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Collateral Qty.', dataIndex: 'colqty', sorter: (a: any, b: any) => a.colqty - b.colqty, render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Collateral Type.', dataIndex: 'coltype', sorter: (a: any, b: any) => a.coltype.localeCompare(b.coltype), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Haircut', dataIndex: 'haircut', sorter: (a: any, b: any) => a.haircut.localeCompare(b.haircut), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Avg. Price', dataIndex: 'avgprice', sorter: (a: any, b: any) => a.avgprice.localeCompare(b.avgprice), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Day', dataIndex: 'day', sorter: (a: any, b: any) => a.day.localeCompare(b.day), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Platform', dataIndex: 'platform', sorter: (a: any, b: any) => a.platform.localeCompare(b.platform), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
-    { title: 'Broker', dataIndex: 'broker', sorter: (a: any, b: any) => a.broker.localeCompare(b.broker), render: (_: any, row: any) => row.isMergedRow ? { props: { colSpan: 0 } } : _ },
   ] : [];
 
   const firstColumn = {
@@ -120,7 +114,7 @@ const Holdings: React.FC = () => {
     sorter: (a: any, b: any) => a.pseAcc?.localeCompare(b.pseAcc),
     render: (_: any, row: any) =>
       row.isMergedRow
-        ? { children: row.pseAcc, props: { colSpan: filteredData.length > 0 ? 22 : 1, style: { textAlign: 'center', fontWeight: 'bold', background: '#f5f5f5' } } }
+        ? { children: row.pseAcc, props: { colSpan: filteredData.length > 0 ? 15 : 1, style: { textAlign: 'center', fontWeight: 'bold', background: '#f5f5f5' } } }
         : _
   };
 
@@ -128,37 +122,50 @@ const Holdings: React.FC = () => {
 
   const filterInputRow = (
     <tr>
-      {columns.map((col: any) => {
-        if (col.dataIndex === 'pseAcc' && filteredData.length === 0) {
-          return <th key={col.dataIndex} />;
-        }
-
-        const uniqueValues = Array.from(
-          new Set(initialData.map((item) => (item as any)[col.dataIndex]))
-        );
-
-        return (
-          <th key={col.dataIndex}>
+      {columns.map((col: any) => (
+        <th key={col.dataIndex}>
+          {col.dataIndex && (
             <Select
               allowClear
-              showSearch
               size="small"
               style={{ width: '100%' }}
-              value={filters[col.dataIndex] || undefined}
-              onChange={(value) => handleColumnFilter(value || '', col.dataIndex)}
-            >
-              {uniqueValues.map((val) => (
-                <Option key={val} value={val}>{val}</Option>
-              ))}
-            </Select>
-          </th>
-        );
-      })}
+              value={filters[col.dataIndex]}
+              onChange={(v) => handleColumnFilter(v || '', col.dataIndex)}
+            />
+          )}
+        </th>
+      ))}
     </tr>
   );
 
   return (
     <div style={{ padding: 16 }}>
+
+      <Row gutter={8} style={{ marginBottom: 8 }}>
+        <Col><Tooltip title="Reset Holdings Filter"><Button style={greyBtn}>Reset</Button></Tooltip></Col>
+        <Col><Tooltip title="Select all holdings (If filtered, only filtered holdings will be selected)"><Button style={greyBtn}>Select</Button></Tooltip></Col>
+        <Col><Tooltip title="Deselect all holdings"><Button style={greyBtn}>Deselect</Button></Tooltip></Col>
+        <Col><Tooltip title="Square-Off (SELL) one or more holdings with a single click!"><Button style={orangeBtn}>Square-Off</Button></Tooltip></Col>
+        <Col><Tooltip title="Increase (BUY) one or more holdings with a single click!"><Button style={greenBtn}>Increase</Button></Tooltip></Col>
+
+        <Col flex="auto" />
+
+        <Col>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Search"
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 220 }}
+          />
+        </Col>
+      </Row>
+
+      <Row gutter={8} style={{ marginBottom: 12 }}>
+        <Col><Tooltip title="Download in Excel format"><Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>Excel</Button></Tooltip></Col>
+        <Col><Tooltip title="Download in Csv format"><Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>CSV</Button></Tooltip></Col>
+      </Row>
+
       <Table
         columns={columns}
         dataSource={tableData}
