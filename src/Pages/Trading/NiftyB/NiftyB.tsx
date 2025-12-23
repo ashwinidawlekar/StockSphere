@@ -8,180 +8,146 @@ import { Table, Input, Button, Select, Row, Col, Card, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
-// const initialData = [
-//   {
-//     key: "1",
-//     m2m: "₹0.00",
-//     pnl: "₹0.00",
-//     atpnl: "₹0.00",
-//     symbol: "",
-//     realpl: "",
-//     unrealpl: "",
-//     netqty: 0,
-//     ltp: "",
-//     buyqty: 0,
-//     sellqty: 0,
-//     buyval: "₹0.00",
-//     sellval: "₹0.00",
-//     netval: "₹0.00",
-//     bavg: "₹0.00",
-//     savg: "₹0.00",
-//   },
-// ];
+const initialData = [
+  {
+    key: "1",
+    m2m: "₹0.00",
+    pnl: "₹0.00",
+    atpnl: "₹0.00",
+    symbol: "",
+    realpl: "",
+    unrealpl: "",
+    netqty: 0,
+    ltp: "",
+    buyqty: 0,
+    sellqty: 0,
+    buyval: "₹0.00",
+    sellval: "₹0.00",
+    netval: "₹0.00",
+    bavg: "₹0.00",
+    savg: "₹0.00",
+  },
+];
 
-// const parseCurrency = (val: any) =>
-//   parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
+const parseCurrency = (val: any) =>
+  parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
 
-// const handleColumnFilter = (value: string, key: string) => {
-//   const newFilters = { ...filters, [key]: value };
-//   setFilters(newFilters);
-
-//   let data = initialData;
-//   Object.keys(newFilters).forEach((k) => {
-//     if (newFilters[k]) {
-//       data = data.filter((row: any) =>
-//         String(row[k]).toLowerCase().includes(newFilters[k].toLowerCase())
-//       );
-//     }
-//   });
-//   setFilteredData(data);
-// };
-
-// const columns = [
-//   {
-//     key: "m2m",
-//     title: "M2M",
-//     dataIndex: "m2m",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.m2m) - parseCurrency(b.m2m),
-//     onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
-//   },
-//   {
-//     key: "pnl",
-//     title: "PnL",
-//     dataIndex: "pnl",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.pnl) - parseCurrency(b.pnl),
-//     onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
-//   },
-//   {
-//     key: "atpnl",
-//     title: "AT PnL",
-//     dataIndex: "atpnl",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl),
-//     onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
-//   },
-//   {
-//     key: "symbol",
-//     title: "Symbol",
-//     dataIndex: "symbol",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       String(a.symbol).localeCompare(String(b.symbol)),
-//   },
-//   {
-//     key: "realpl",
-//     title: "Real PL",
-//     dataIndex: "realpl",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       parseCurrency(a.realpl) - parseCurrency(b.realpl),
-//   },
-//   {
-//     key: "unrealpl",
-//     title: "Unreal PL",
-//     dataIndex: "unrealpl",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl),
-//   },
-//   {
-//     key: "netqty",
-//     title: "Net Qty",
-//     dataIndex: "netqty",
-//     width: 100,
-//     sorter: (a: any, b: any) => Number(a.netqty) - Number(b.netqty),
-//   },
-//   {
-//     key: "ltp",
-//     title: "Ltp",
-//     dataIndex: "ltp",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.ltp) - parseCurrency(b.ltp),
-//   },
-//   {
-//     key: "buyqty",
-//     title: "Buy Qty",
-//     dataIndex: "buyqty",
-//     width: 100,
-//     sorter: (a: any, b: any) => Number(a.buyqty) - Number(b.buyqty),
-//   },
-//   {
-//     key: "sellqty",
-//     title: "Sell Qty",
-//     dataIndex: "sellqty",
-//     width: 100,
-//     sorter: (a: any, b: any) => Number(a.sellqty) - Number(b.sellqty),
-//   },
-//   {
-//     key: "buyval",
-//     title: "Buy Val",
-//     dataIndex: "buyval",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       parseCurrency(a.buyval) - parseCurrency(b.buyval),
-//   },
-//   {
-//     key: "sellval",
-//     title: "Sell Val",
-//     dataIndex: "sellval",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       parseCurrency(a.sellval) - parseCurrency(b.sellval),
-//   },
-//   {
-//     key: "netval",
-//     title: "Net Val",
-//     dataIndex: "netval",
-//     width: 100,
-//     sorter: (a: any, b: any) =>
-//       parseCurrency(a.netval) - parseCurrency(b.netval),
-//   },
-//   {
-//     key: "bavg",
-//     title: "B Avg Prc",
-//     dataIndex: "bavg",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.bavg) - parseCurrency(b.bavg),
-//   },
-//   {
-//     key: "savg",
-//     title: "S Avg Prc",
-//     dataIndex: "savg",
-//     width: 100,
-//     sorter: (a: any, b: any) => parseCurrency(a.savg) - parseCurrency(b.savg),
-//   },
-// ];
-
-// const filterRow = (
-//   <tr>
-//     {columns.map((col) => (
-//       <th key={col.dataIndex}>
-//         <Select
-//           allowClear
-//           size="small"
-//           style={{ width: "100%" }}
-//           value={filters[col.dataIndex]}
-//           onChange={(v) => handleColumnFilter(v || "", col.dataIndex)}
-//         />
-//       </th>
-//     ))}
-//   </tr>
-// );
-
-// const [filters, setFilters] = useState<{ [key: string]: string }>({});
-// const [filteredData, setFilteredData] = useState(initialData);
+const columns = [
+  {
+    key: "m2m",
+    title: "M2M",
+    dataIndex: "m2m",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.m2m) - parseCurrency(b.m2m),
+    onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
+  },
+  {
+    key: "pnl",
+    title: "PnL",
+    dataIndex: "pnl",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.pnl) - parseCurrency(b.pnl),
+    onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
+  },
+  {
+    key: "atpnl",
+    title: "AT PnL",
+    dataIndex: "atpnl",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.atpnl) - parseCurrency(b.atpnl),
+    onHeaderCell: () => ({ style: { backgroundColor: "#fffac8" } }),
+  },
+  {
+    key: "symbol",
+    title: "Symbol",
+    dataIndex: "symbol",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      String(a.symbol).localeCompare(String(b.symbol)),
+  },
+  {
+    key: "realpl",
+    title: "Real PL",
+    dataIndex: "realpl",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      parseCurrency(a.realpl) - parseCurrency(b.realpl),
+  },
+  {
+    key: "unrealpl",
+    title: "Unreal PL",
+    dataIndex: "unrealpl",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      parseCurrency(a.unrealpl) - parseCurrency(b.unrealpl),
+  },
+  {
+    key: "netqty",
+    title: "Net Qty",
+    dataIndex: "netqty",
+    width: 100,
+    sorter: (a: any, b: any) => Number(a.netqty) - Number(b.netqty),
+  },
+  {
+    key: "ltp",
+    title: "Ltp",
+    dataIndex: "ltp",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.ltp) - parseCurrency(b.ltp),
+  },
+  {
+    key: "buyqty",
+    title: "Buy Qty",
+    dataIndex: "buyqty",
+    width: 100,
+    sorter: (a: any, b: any) => Number(a.buyqty) - Number(b.buyqty),
+  },
+  {
+    key: "sellqty",
+    title: "Sell Qty",
+    dataIndex: "sellqty",
+    width: 100,
+    sorter: (a: any, b: any) => Number(a.sellqty) - Number(b.sellqty),
+  },
+  {
+    key: "buyval",
+    title: "Buy Val",
+    dataIndex: "buyval",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      parseCurrency(a.buyval) - parseCurrency(b.buyval),
+  },
+  {
+    key: "sellval",
+    title: "Sell Val",
+    dataIndex: "sellval",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      parseCurrency(a.sellval) - parseCurrency(b.sellval),
+  },
+  {
+    key: "netval",
+    title: "Net Val",
+    dataIndex: "netval",
+    width: 100,
+    sorter: (a: any, b: any) =>
+      parseCurrency(a.netval) - parseCurrency(b.netval),
+  },
+  {
+    key: "bavg",
+    title: "B Avg Prc",
+    dataIndex: "bavg",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.bavg) - parseCurrency(b.bavg),
+  },
+  {
+    key: "savg",
+    title: "S Avg Prc",
+    dataIndex: "savg",
+    width: 100,
+    sorter: (a: any, b: any) => parseCurrency(a.savg) - parseCurrency(b.savg),
+  },
+];
 
 export default function NiftyB() {
   const [open, setOpen] = useState(false);
@@ -195,6 +161,40 @@ export default function NiftyB() {
       value: "nifty 16 dec 2025 ce 26000",
     },
   ];
+
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [filteredData, setFilteredData] = useState(initialData);
+
+  const handleColumnFilter = (value: string, key: string) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+
+    let data = initialData;
+    Object.keys(newFilters).forEach((k) => {
+      if (newFilters[k]) {
+        data = data.filter((row: any) =>
+          String(row[k]).toLowerCase().includes(newFilters[k].toLowerCase())
+        );
+      }
+    });
+    setFilteredData(data);
+  };
+
+  const filterRow = (
+    <tr>
+      {columns.map((col) => (
+        <th key={col.dataIndex}>
+          <Select
+            allowClear
+            size="small"
+            style={{ width: "100%" }}
+            value={filters[col.dataIndex]}
+            onChange={(v) => handleColumnFilter(v || "", col.dataIndex)}
+          />
+        </th>
+      ))}
+    </tr>
+  );
 
   return (
     <div>
@@ -269,7 +269,7 @@ export default function NiftyB() {
 
           <div className="options">
             <div className="trade_tab">
-              {/* <Table
+              <Table
                 bordered
                 pagination={false}
                 columns={columns}
@@ -306,7 +306,7 @@ export default function NiftyB() {
                       ),
                   },
                 }}
-              /> */}
+              />
             </div>
           </div>
         </div>
