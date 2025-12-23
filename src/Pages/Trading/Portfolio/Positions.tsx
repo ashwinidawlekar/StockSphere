@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import NiftyB from "../NiftyB/NiftyB";
 
 const { Option } = Select;
 
@@ -173,6 +174,7 @@ const Positions: React.FC = () => {
         <Col><Tooltip title="Download in Csv format"><Button style={{ fontWeight: 'bold', backgroundColor: '#36454F', color: '#fff' }}>CSV</Button></Tooltip></Col>
       </Row>
 
+    <NiftyB/>
       <Table
         bordered
         pagination={false}
