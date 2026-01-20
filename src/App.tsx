@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react'
-//import axios from 'axios'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar.tsx'
 import Activity from './Pages/AutoTrader/Activity.tsx'
-//import { httpClient } from './Services/apiService.ts'
 import MainTabs from './Pages/Trading/Tabs/Tabs.tsx'
 import Account from './Pages/User//Account/Account.tsx';
 import Profile from './Pages/User/Profile/Profile.tsx';
@@ -14,11 +12,15 @@ import Margins from "./Pages/Trading/Portfolio/Margins.tsx";
 import Holdings from "./Pages/Trading/Portfolio/Holdings.tsx";
 import Notifications from "./Pages/Trading/Portfolio/Notifications.tsx";
 import Screener from "./Pages/Screener/Screener";
-
-// import Instruments from './pages/Instruments'
-// import Settings from './pages/Settings'
-// import Help from './pages/Help'
-// import User from './pages/User'
+//import General from "./Pages/Settings/General/General";
+import TradingAccounts from "./Pages/Settings/TradingAccounts/TradingAccounts";
+import PseudoAccounts from "./Pages/Settings/PseudoAccounts/PseudoAccounts";
+import GroupAccounts from "./Pages/Settings/GroupAccounts/GroupAccounts";
+// import MasterAccounts from "./Pages/Settings/MasterAccounts/MasterAccounts";
+// import Security from "./Pages/Settings/Security/Security";
+import CreateTradingAccount from "./Pages/Settings/TradingAccounts/CreateTradingAccount";
+import ValidateAll from './Pages/Settings/TradingAccounts/ValidateAll.tsx';
+import CreateGroupAccount from './Pages/Settings/GroupAccounts/CreateGroupAccount.tsx';
 
 const App: React.FC = () => {
 
@@ -37,12 +39,16 @@ const App: React.FC = () => {
           <Route path="/trading/margins" element={<Margins />} />
           <Route path="/trading/holdings" element={<Holdings />} />
           <Route path="/trading/notifications" element={<Notifications />} />
-          <Route path='/Screener/Screener' element={<Screener />} />
-
-          {/* <Route path="/autotrader/instruments" element={<Instruments />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/user" element={<User />} />  */}
+          <Route path='/Screener/Screener' element={<Screener />} /> 
+          {/* <Route path="/settings/general" element={<General />} /> */}
+          <Route path="/settings/tradingaccounts" element={<TradingAccounts />} />
+          <Route path="/settings/pseudoaccounts" element={<PseudoAccounts />} />
+          <Route path="/settings/groupaccounts" element={<GroupAccounts />} />
+          {/*<Route path="/settings/masteraccounts" element={<MasterAccounts />} />
+          <Route path="/settings/security" element={<Security />} /> */}
+          <Route path="/settings/tradingaccounts/createtradingaccount" element={<CreateTradingAccount />} />
+          <Route path="/settings/tradingaccounts/validateall" element={<ValidateAll />} />
+          <Route path="/settings/groupaccounts/creategroupaccount" element={<CreateGroupAccount />} />
         </Routes>
       </div>
     </>

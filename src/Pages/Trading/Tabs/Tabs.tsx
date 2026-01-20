@@ -5,7 +5,6 @@ import {
     FundOutlined,
     NotificationOutlined,
     PieChartOutlined,
-    // RupeeOutlined,
     ShoppingOutlined,
     StockOutlined,
     SwapOutlined,
@@ -19,7 +18,7 @@ import Orders from "../Portfolio/Orders.tsx";
 import Margins from "../Portfolio/Margins.tsx";
 import Holdings from "../Portfolio/Holdings.tsx";
 import Notifications from "../Portfolio/Notifications.tsx";
-// import Marketwatch from './pages/Marketwatch'
+import Nifty from "../Portfolio/Nifty.tsx";
 import Trade from '../Trade/Trade.tsx'
 import MarketWatch from "../../MarketWatch/MarketWatch.tsx";
 
@@ -104,6 +103,15 @@ const MainTabs: React.FC = () => {
                         </>
                     ),
                     children: <Notifications />,
+                },
+                {
+                    key: 'nifty',
+                    label: (
+                        <>
+                            <PieChartOutlined /> Nifty
+                        </>
+                    ),
+                    children: <Nifty />,
                 },
             ]}
         />

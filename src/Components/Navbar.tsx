@@ -37,20 +37,20 @@ const Navbar: React.FC = () => {
                 <Menu.Item key="general">
                     <Link to="/settings/general">General</Link>
                 </Menu.Item>
-                <Menu.Item key="general">
-                    <Link to="/settings/general">Trading Accounts</Link>
+                <Menu.Item key="tradingaccounts">
+                    <Link to="/settings/tradingaccounts">Trading Accounts</Link>
                 </Menu.Item>
-                <Menu.Item key="general">
-                    <Link to="/settings/general">Psudo Accounts</Link>
+                <Menu.Item key="pseudoaccounts">
+                    <Link to="/settings/pseudoaccounts">Pseudo Accounts</Link>
                 </Menu.Item>
-                <Menu.Item key="general">
-                    <Link to="/settings/general">Group Accounts</Link>
+                <Menu.Item key="groupaccounts">
+                    <Link to="/settings/groupaccounts">Group Accounts</Link>
                 </Menu.Item>
-                <Menu.Item key="general">
-                    <Link to="/settings/general">Master Accounts</Link>
+                <Menu.Item key="masteraccounts">
+                    <Link to="/settings/masteraccounts">Master Accounts</Link>
                 </Menu.Item>
-                <Menu.Item key="general">
-                    <Link to="/settings/general">Security</Link>
+                <Menu.Item key="security">
+                    <Link to="/settings/security">Security</Link>
                 </Menu.Item>
             </SubMenu>
             <Menu.Item key="help" icon={<QuestionCircleOutlined />}>
