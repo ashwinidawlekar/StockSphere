@@ -41,7 +41,7 @@ const Payment: React.FC = () => {
           maxWidth: 1600,
           margin: "0 auto",
         }}
-        bodyStyle={{ padding: 32 }}
+        styles={{ body: { padding: 32 } }}
       >
         <Title level={3} style={{ color: "#008080", marginBottom: 8 }}>
           Add new payment request
@@ -57,7 +57,7 @@ const Payment: React.FC = () => {
             borderRadius: 8,
             background: "#fafafa",
           }}
-          bodyStyle={{ padding: 24 }}
+          styles={{ body: { padding: 24 } }}
         >
           <Row gutter={[32, 32]}>
             {/* Left: Form */}

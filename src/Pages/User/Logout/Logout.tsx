@@ -1,30 +1,43 @@
-import React from 'react';
-import { Layout, Card, Button } from 'antd';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { message, Spin } from 'antd';
+import { authService } from '../../../Services/authService';
+import { useAuthStore } from '../../../store/authStore';
+import { useAccountStore } from '../../../store/accountStore';
 
-const { Header, Content } = Layout;
-
-const Logout = () => {
+const Logout: React.FC = () => {
   const navigate = useNavigate();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const clearAccounts = useAccountStore((state) => state.clearAccounts);
 
-  const handleLogout = () => {
-    console.log('Logging out...');
-    navigate('/');
-  };
+  useEffect(() => {
+    const performLogout = async () => {
+      try {
+        await authService.logout();
+      } catch (error) {
+        // Ignore errors, clear local state anyway
+      } finally {
+        clearAuth();
+        clearAccounts();
+        message.success('Logged out successfully');
+        navigate('/login');
+      }
+    };
+
+    performLogout();
+  }, [clearAuth, clearAccounts, navigate]);
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ color: 'white' }}>Logout</Header>
-      <Content style={{ padding: '24px' }}>
-        <Card title="Confirm Logout">
-          <p>Are you sure you want to logout?</p>
-          <Button type="primary" danger onClick={handleLogout}>
-            Logout
-          </Button>
-        </Card>
-      </Content>
-    </Layout>
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      minHeight: '100vh' 
+    }}>
+      <Spin size="large" tip="Logging out..." />
+    </div>
   );
 };
 
 export default Logout;
+

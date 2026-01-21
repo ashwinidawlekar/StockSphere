@@ -1,3 +1,30 @@
+backend/test_*.py
+backend/diagnose_*.py
+backend/fix_*.py
+backend/add_*.py
+backend/recreate_*.py
+backend/clear_*.py
+backend/debug_*.py
+backend/inspect_*.py
+backend/migrate_*.py
+backend/revert_*.py
+backend/update_*.py
+backend/append_*.py
+backend/clean_*.py
+# Backend screenshots and debug artifacts
+backend/*.png
+backend/*.html
+# Environment files (CRITICAL!)
+backend/.env
+.env
+backend/delete_all_accounts.py
+backend/zerodha*.py
+backend/test_*.py
+backend/diagnose_*.py
+backend/fix_*.py
+backend/add_*.py
+
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies

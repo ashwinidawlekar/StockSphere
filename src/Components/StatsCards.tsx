@@ -14,14 +14,14 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color }) => {
     return (
         <Card
-            bordered={false}
+            variant="borderless"
             style={{
                 borderRadius: 12,
                 background: color || 'linear-gradient(to right, #00dbde, #fc00ff)',
                 color: 'white',
                 minHeight: 100,
             }}
-            bodyStyle={{ padding: 16 }}
+            styles={{ body: { padding: 16 } }}
         >
             <Text style={{ color: 'white', fontWeight: 500 }}>{label}</Text>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: 8 }}>

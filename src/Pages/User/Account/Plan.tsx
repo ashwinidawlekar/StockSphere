@@ -33,7 +33,7 @@ const Plan: React.FC = () => {
 
         {/* Card */}
         <Card
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
           style={{
             borderTopLeftRadius: 0,
             borderTopRightRadius: 0,
