@@ -11,10 +11,8 @@ backend/revert_*.py
 backend/update_*.py
 backend/append_*.py
 backend/clean_*.py
-# Backend screenshots and debug artifacts
 backend/*.png
 backend/*.html
-# Environment files (CRITICAL!)
 backend/.env
 .env
 backend/delete_all_accounts.py
