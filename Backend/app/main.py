@@ -9,10 +9,23 @@ from app.core.database import engine, Base
 # Note: Database tables are created via alembic migrations
 
 
+from contextlib import asynccontextmanager
+import asyncio
+from app.services.account_service import AccountService
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize broker sessions for all enabled accounts
+    # We do this in background to not block server startup
+    asyncio.create_task(AccountService.initialize_all_sessions())
+    yield
+    # Shutdown logic if needed
+
 app = FastAPI(
     title="StockSphere Trading Backend",
     description="Multi-account trading backend with Zerodha and 5paisa support",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 

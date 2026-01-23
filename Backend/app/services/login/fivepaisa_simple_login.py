@@ -80,6 +80,10 @@ class FivePaisaSimpleLogin:
             # Access token is automatically set on the client object after get_totp_session()
             access_token = client.Jwt_token  # or client.access_token
             
+            # Ensure access_token is a string, not a bytes object
+            if isinstance(access_token, bytes):
+                access_token = access_token.decode('utf-8')
+            
             if not access_token:
                 error_msg = "Failed to get access token after TOTP login"
                 logger.error(error_msg)

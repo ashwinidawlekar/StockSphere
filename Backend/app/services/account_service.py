@@ -4,7 +4,7 @@ Account service for managing trading accounts with automated login
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal
 from sqlalchemy import select
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from app.models.account import Account, BrokerName
 from app.schemas.account import AccountCreate, AccountUpdate
 from app.core.encryption import encryption_service
@@ -17,6 +17,40 @@ logger = logging.getLogger(__name__)
 
 class AccountService:
     """Service for account management with automated login"""
+    
+    @staticmethod
+    def _clean_token(token: Any) -> Optional[str]:
+        """
+        Defensively clean access token.
+        Handles:
+        1. Bytes object -> decode to str
+        2. String starting with b' or b" -> strip the b and quotes
+        3. String wrapped in quotes -> strip quotes
+        4. None or empty -> return None
+        """
+        if not token:
+            return None
+            
+        def deep_clean(t):
+            if not t:
+                return t
+            if isinstance(t, bytes):
+                try:
+                    return deep_clean(t.decode('utf-8'))
+                except:
+                    return str(t)
+            if isinstance(t, str):
+                t = t.strip()
+                # Strip wrapping quotes if they exist (sometimes tokens are saved with extra quotes)
+                if len(t) >= 2 and ((t[0] == "'" and t[-1] == "'") or (t[0] == '"' and t[-1] == '"')):
+                    return deep_clean(t[1:-1])
+                # Handle literal string representation of bytestring: b'token' or b"token"
+                if len(t) > 3 and t.startswith("b") and t[1] in ("'", '"') and t.endswith(t[1]):
+                    return deep_clean(t[2:-1])
+                return t
+            return str(t)
+
+        return deep_clean(token)
     
     @staticmethod
     async def perform_background_login(account_id: int):
@@ -166,6 +200,70 @@ class AccountService:
         return await AccountService._validate_credentials(temp_account)
     
     @staticmethod
+    async def initialize_all_sessions() -> None:
+        """
+        Proactive startup task to initialize sessions for all enabled accounts.
+        Ensures that tokens are valid and ready before user requests data.
+        """
+        try:
+            from app.core.database import AsyncSessionLocal
+            
+            async with AsyncSessionLocal() as db:
+                # Fetch all enabled accounts
+                result = await db.execute(
+                    select(Account).where(Account.is_enabled == True)
+                )
+                accounts = result.scalars().all()
+                
+                if not accounts:
+                    logger.info("No enabled accounts to initialize.")
+                    return
+                
+                print(f"DEBUG: Found {len(accounts)} enabled accounts for initialization.", flush=True)
+                
+                for account in accounts:
+                    try:
+                        print(f"DEBUG: Initializing account {account.account_id} ({account.broker_name})...", flush=True)
+                        # Re-fetch specific account to avoid session conflicts and ensure we have latest data
+                        result = await db.execute(select(Account).where(Account.account_id == account.account_id))
+                        db_account = result.scalar_one_or_none()
+                        
+                        if not db_account:
+                            continue
+
+                        # Attempt to ensure a valid token (refreshes if it's expired)
+                        if db_account.broker_name == BrokerName.ZERODHA.value:
+                            service = ZerodhaLoginService()
+                            await service.ensure_valid_token(db_account)
+                        elif db_account.broker_name == BrokerName.FIVEPAISA.value:
+                            service = FivePaisaLoginService()
+                            await service.ensure_valid_token(db_account)
+                        
+                        # CRITICAL: Even if the session was already "valid", we MUST clean the token 
+                        # to fix any literal b'...' prefixes or other malformations once and for all.
+                        original_token = db_account.access_token
+                        print(f"DEBUG: Account {db_account.account_id} token before clean: {repr(original_token)[:50]}...", flush=True)
+                        cleaned_token = AccountService._clean_token(original_token)
+                        
+                        if cleaned_token != original_token:
+                            print(f"DEBUG: Cleaned token for account {db_account.account_id}!", flush=True)
+                            db_account.access_token = cleaned_token
+                        
+                        # Save changes to database
+                        db.add(db_account)
+                        await db.commit()
+                        
+                        print(f"DEBUG: Account {db_account.account_id} initialization complete and saved.", flush=True)
+                    except Exception as e:
+                        print(f"DEBUG ERROR: Failed to initialize session for account {account.account_id}: {e}", flush=True)
+                        await db.rollback()
+                
+                logger.info("Session initialization complete.")
+                
+        except Exception as e:
+            logger.error(f"Error in initialize_all_sessions: {e}", exc_info=True)
+
+    @staticmethod
     async def _auto_login_account(db: AsyncSession, account: Account) -> bool:
         """
         Perform automated login for an account
@@ -190,7 +288,8 @@ class AccountService:
             result = await login_service.login(account)
             
             if result.get("success") and result.get("access_token"):
-                account.access_token = result["access_token"]
+                # Clean the token before saving
+                account.access_token = AccountService._clean_token(result["access_token"])
                 account.token_generated_at = result.get("token_generated_at")
                 account.is_validated = True
                 db.add(account)

@@ -1,9 +1,44 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Table, Select } from "antd";
+import React, { useMemo } from "react";
+import { Table } from "antd";
+import { AccountMargin } from "../../../Services/marginService";
 
-const { Option } = Select;
+type SegmentFilter = "all" | "equity" | "commodity";
 
-const initialData: any[] = [];
+interface MarginsTableProps {
+  margins: AccountMargin[];
+  loading: boolean;
+  searchText: string;
+  segmentFilter: SegmentFilter;
+}
+
+interface TableRow {
+  key: string;
+  pseAcc: string;
+  trdAcc: string;
+  category: string;
+  total: string;
+  net: string;
+  funds: string;
+  utilized: string;
+  available: string;
+  collateral: string;
+  realmtm: string;
+  unrealmtm: string;
+  adhoc: string;
+  span: string;
+  exposure: string;
+  payin: string;
+  payout: string;
+  day: string;
+  broker: string;
+}
+
+const formatCurrency = (value: number): string => {
+  return `₹${value.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
 const parseCurrency = (val: any) =>
   parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
@@ -119,136 +154,97 @@ const columns = [
   },
 ];
 
-const MarginsTable: React.FC = () => {
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [filteredData, setFilteredData] = useState(initialData);
-  const [loading, setLoading] = useState(false);
+const MarginsTable: React.FC<MarginsTableProps> = ({
+  margins,
+  loading,
+  searchText,
+  segmentFilter,
+}) => {
+  const tableData = useMemo(() => {
+    const rows: TableRow[] = [];
 
-  const isFirstLoad = useRef(true);
-  useEffect(() => {
-  const fetchMargins = () => {
-    if (isFirstLoad.current) {
-      setLoading(true);
-    }
+    margins.forEach((margin) => {
+      // Filter by search text
+      const matchesSearch =
+        !searchText ||
+        margin.trading_login_id.toLowerCase().includes(searchText.toLowerCase()) ||
+        margin.broker_name.toLowerCase().includes(searchText.toLowerCase()) ||
+        (margin.nickname && margin.nickname.toLowerCase().includes(searchText.toLowerCase()));
 
-    fetch("http://localhost:5000/margins")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) {
-          setFilteredData(initialData);
-          return;
-        }
+      if (!matchesSearch) return;
 
-        const row = data[0];
+      // Add equity row
+      if ((segmentFilter === "all" || segmentFilter === "equity") && margin.equity) {
+        const equity = margin.equity;
+        rows.push({
+          key: `${margin.account_id}-equity`,
+          pseAcc: margin.nickname || "",
+          trdAcc: margin.trading_login_id,
+          category: "EQUITY",
+          total: formatCurrency(equity.available.opening_balance),
+          net: formatCurrency(equity.net),
+          funds: formatCurrency(equity.available.cash),
+          utilized: formatCurrency(
+            equity.utilised.debits + equity.utilised.span + equity.utilised.exposure
+          ),
+          available: formatCurrency(equity.available.live_balance),
+          collateral: formatCurrency(equity.available.collateral),
+          realmtm: formatCurrency(equity.utilised.m2m_realised),
+          unrealmtm: formatCurrency(equity.utilised.m2m_unrealised),
+          adhoc: formatCurrency(equity.available.adhoc_margin),
+          span: formatCurrency(equity.utilised.span),
+          exposure: formatCurrency(equity.utilised.exposure),
+          payin: formatCurrency(equity.available.intraday_payin),
+          payout: formatCurrency(equity.utilised.payout),
+          day: new Date(margin.last_updated).toLocaleDateString(),
+          broker: margin.broker_name,
+        });
+      }
 
-        const apiRow = {
-          key: "1",
-          pseAcc: "",
-          trdAcc: "",
-          category: "TOTAL",
-          total: `₹${row.Ledgerbalance}`,
-          net: `₹${row.NetAvailableMargin}`,
-          funds: `₹${row.NetAvailableMargin}`,
-          utilized: `₹${row.MarginUtilized}`,
-          available: `₹${row.NetAvailableMargin}`,
-          collateral: `₹${row.CollateralValueAfterHairCut}`,
-          realmtm: `₹${row.TodaysLoss ?? 0}`,
-          unrealmtm: `₹0`,
-          adhoc: `₹${row.AdhocMargin}`,
-          span: `₹${row.DerivativeMargin}`,
-          exposure: `₹0`,
-          payin: `₹${row.FundsPayIn}`,
-          payout: `₹${row.FundsWithdrawal}`,
-          day: "",
-          broker: "5paisa",
-        };
-
-        setFilteredData([apiRow]);
-
-        
-        if (isFirstLoad.current) {
-          setLoading(false);
-          isFirstLoad.current = false;
-        }
-      })
-      .catch(() => {
-        setFilteredData(initialData);
-      })
-  };
-
-  fetchMargins();
-
-  const intervalId = setInterval(fetchMargins, 1000);
-
-  return () => clearInterval(intervalId);
-}, []);
-
-
-  const handleColumnFilter = (value: string, key: string) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-
-    let data = initialData;
-    Object.keys(newFilters).forEach((k) => {
-      if (newFilters[k]) {
-        data = data.filter((row: any) =>
-          String(row[k]).toLowerCase().includes(newFilters[k].toLowerCase())
-        );
+      // Add commodity row if exists
+      if (
+        (segmentFilter === "all" || segmentFilter === "commodity") &&
+        margin.commodity
+      ) {
+        const commodity = margin.commodity;
+        rows.push({
+          key: `${margin.account_id}-commodity`,
+          pseAcc: margin.nickname || "",
+          trdAcc: margin.trading_login_id,
+          category: "COMMODITY",
+          total: formatCurrency(commodity.available.opening_balance),
+          net: formatCurrency(commodity.net),
+          funds: formatCurrency(commodity.available.cash),
+          utilized: formatCurrency(
+            commodity.utilised.debits + commodity.utilised.span + commodity.utilised.exposure
+          ),
+          available: formatCurrency(commodity.available.live_balance),
+          collateral: formatCurrency(commodity.available.collateral),
+          realmtm: formatCurrency(commodity.utilised.m2m_realised),
+          unrealmtm: formatCurrency(commodity.utilised.m2m_unrealised),
+          adhoc: formatCurrency(commodity.available.adhoc_margin),
+          span: formatCurrency(commodity.utilised.span),
+          exposure: formatCurrency(commodity.utilised.exposure),
+          payin: formatCurrency(commodity.available.intraday_payin),
+          payout: formatCurrency(commodity.utilised.payout),
+          day: new Date(margin.last_updated).toLocaleDateString(),
+          broker: margin.broker_name,
+        });
       }
     });
 
-    setFilteredData(data);
-  };
-
-  const filterRow = (
-    <tr>
-      {columns.map((col: any) => (
-        <th key={col.dataIndex}>
-          <Select
-            allowClear
-            size="small"
-            style={{ width: "100%" }}
-            value={filters[col.dataIndex]}
-            onChange={(v) => handleColumnFilter(v || "", col.dataIndex)}
-          />
-        </th>
-      ))}
-    </tr>
-  );
+    return rows;
+  }, [margins, searchText, segmentFilter]);
 
   return (
     <Table
       bordered
       loading={loading}
-      pagination={false}
+      pagination={{ pageSize: 20, showSizeChanger: true, showTotal: (total) => `Total ${total} rows` }}
       columns={columns}
-      dataSource={filteredData}
+      dataSource={tableData}
       scroll={{ x: "max-content" }}
-      locale={{ emptyText: "" }}
-      components={{
-        header: {
-          wrapper: (props: any) => (
-            <thead {...props}>
-              {props.children}
-              {filterRow}
-            </thead>
-          ),
-        },
-        body: {
-          wrapper: (props: any) =>
-            filteredData.length === 0 ? (
-              <tbody>
-                <tr>
-                  <td colSpan={columns.length} style={{ textAlign: "center" }}>
-                    No Data Available in table
-                  </td>
-                </tr>
-              </tbody>
-            ) : (
-              <tbody {...props} />
-            ),
-        },
-      }}
+      locale={{ emptyText: "No margin data available. Please add and validate trading accounts." }}
     />
   );
 };

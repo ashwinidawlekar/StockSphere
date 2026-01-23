@@ -97,19 +97,30 @@ class FivePaisaLoginService(BaseLoginService):
                 logger.info(f"No token found for account {account.account_id}, logging in...")
                 result = await self.login(account)
                 if result['success']:
-                    # Save token to account object
                     account.access_token = result['access_token']
                     account.token_generated_at = result['token_generated_at']
                     logger.info(f"Token saved for account {account.account_id}")
                 return result['success']
             
-            token_age = datetime.now(timezone.utc) - account.token_generated_at
+            # 5paisa sessions expire daily at midnight IST. 
+            # We must refresh if the token was generated on a different day.
+            ist = timezone(timedelta(hours=5, minutes=30))
+            now_ist = datetime.now(ist)
+            generated_at_ist = account.token_generated_at.astimezone(ist)
             
-            if token_age > timedelta(hours=16):
-                logger.info(f"Token expired for account {account.account_id}, refreshing...")
+            is_expired = False
+            print(f"DEBUG: Validating 5paisa token for {account.account_id}. Generated: {generated_at_ist.strftime('%Y-%m-%d %H:%M:%S')} | Now: {now_ist.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
+            
+            if now_ist.date() > generated_at_ist.date():
+                print(f"DEBUG: Token for account {account.account_id} is from a previous day (IST). FORCE REFRESH.", flush=True)
+                is_expired = True
+            elif (now_ist - generated_at_ist) > timedelta(hours=16):
+                print(f"DEBUG: Token for account {account.account_id} is too old (>16h). FORCE REFRESH.", flush=True)
+                is_expired = True
+            
+            if is_expired:
                 result = await self.login(account)
                 if result['success']:
-                    
                     account.access_token = result['access_token']
                     account.token_generated_at = result['token_generated_at']
                     logger.info(f"Token refreshed for account {account.account_id}")

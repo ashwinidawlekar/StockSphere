@@ -10,6 +10,7 @@ import asyncio
 
 from app.core.database import Base
 from app.core.config import settings
+from app.models.user import User
 from app.models.account import Account
 from app.models.trade import Trade, TradeExecution
 

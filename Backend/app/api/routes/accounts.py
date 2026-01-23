@@ -6,9 +6,24 @@ from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
 from app.schemas.account import AccountCreate, AccountResponse, AccountUpdate
+from app.schemas.margin import AccountMargin, MarginListResponse
 from app.services.account_service import AccountService
+from app.services.margin_service import MarginService
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
+
+
+@router.get("/margins", response_model=MarginListResponse)
+async def get_margins(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get margin data for all user's enabled accounts"""
+    margins = await MarginService.get_margins_for_user(db, current_user.user_id)
+    return {
+        "margins": margins,
+        "total_accounts": len(margins)
+    }
 
 
 @router.post("/validate")
