@@ -295,9 +295,32 @@ const CreateTradingAccount: React.FC = () => {
         Trading Account
       </h1>
 
-      <p style={{ color: "#c45a00", marginBottom: 4 }}>
+      <p style={{ color: "#c45a00", marginBottom: 16 }}>
         Add your trading account details here
       </p>
+
+      {broker === "Zerodha" && (
+        <Card 
+          size="small" 
+          style={{ marginBottom: 24, border: '1px solid #ffe7ba', background: '#fffbe6' }}
+          title={<span style={{ color: '#d46b08' }}>Zerodha API Configuration</span>}
+        >
+          <p style={{ margin: 0 }}>Please configure your Kite Connect app with these URLs:</p>
+          <Row gutter={16} style={{ marginTop: 8 }}>
+            <Col span={12}>
+              <div style={labelStyle}>Redirect URL (HTTP is okay)</div>
+              <Input readOnly value="http://127.0.0.1:8000/api/v1/accounts/zerodha/callback" />
+            </Col>
+            <Col span={12}>
+              <div style={labelStyle}>Postback URL (Must be HTTPS)</div>
+              <Input readOnly value="https://127.0.0.1:8000/api/v1/accounts/zerodha/postback" />
+            </Col>
+          </Row>
+          <p style={{ marginTop: 12, fontSize: '12px', color: '#8c8c8c' }}>
+            * <b>Tip:</b> Zerodha requires HTTPS for Postbacks. For local development, you can use any <code>https://</code> URL (like <code>https://google.com</code>) as a <b>dummy postback</b> to save your app settings. Authentication only relies on the Redirect URL.
+          </p>
+        </Card>
+      )}
 
       <p style={{ color: "#c45a00", marginBottom: 24 }}>
         Your trading account information is completely secure, more details are

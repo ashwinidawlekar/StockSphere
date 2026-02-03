@@ -1,7 +1,7 @@
 """
 Trade models for storing trade execution information
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKey, Enum, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -43,12 +43,32 @@ class Trade(Base):
     quantity = Column(Integer, nullable=False)
     order_type = Column(Enum(OrderType), nullable=False)
     price = Column(Float, nullable=True)
+    trigger_price = Column(Float, nullable=True)
+    product = Column(String(50), nullable=True)  # CNC, MIS, NRML, etc.
+    
+    # Advanced / BO / CO fields
+    target = Column(Float, nullable=True)
+    stoploss = Column(Float, nullable=True)
+    trailing_stoploss = Column(Float, nullable=True)
+    
+    # Variety and Validity
+    variety = Column(String(50), nullable=True, default="regular") # regular, bo, co, amo
+    validity = Column(String(50), nullable=True, default="DAY") # DAY, IOC
+    tag = Column(String(100), nullable=True)
+    
+    # Orchestration features
+    is_amo = Column(Boolean, default=False)
+    split_type = Column(String(20), default="NO") # NO, AUTO, QTY
+    split_qty = Column(Integer, nullable=True)
+    multiplier_active = Column(Boolean, default=False)
+    group_acc_active = Column(Boolean, default=False)
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
     
     executions = relationship("TradeExecution", back_populates="trade", cascade="all, delete-orphan")
     
     def __repr__(self):
-        return f"<Trade(trade_id={self.trade_id}, symbol={self.symbol}, side={self.side})>"
+        return f"<Trade(trade_id={self.trade_id}, symbol={self.symbol}, side={self.side}, product={self.product})>"
 
 
 class TradeExecution(Base):

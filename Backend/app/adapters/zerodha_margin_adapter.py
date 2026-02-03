@@ -65,8 +65,9 @@ class ZerodhaMarginAdapter:
             
             logger.info(f"Fetching margins for Zerodha account {account.account_id}")
             
-            # Fetch margins for all segments
-            margins = kite.margins()
+            # Fetch margins for all segments - using to_thread since kiteconnect is synchronous
+            import asyncio
+            margins = await asyncio.to_thread(kite.margins)
             
             logger.info(f"Successfully fetched margins for Zerodha account {account.account_id}")
             

@@ -26,6 +26,59 @@ async def get_margins(
     }
 
 
+@router.get("/{account_id}/zerodha/login-url")
+async def get_zerodha_login_url(
+    account_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get manual authorization URL for Zerodha"""
+    account = await AccountService.get_account(db, account_id)
+    if not account or account.owner_id != current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Account not found"
+        )
+    
+    try:
+        url = await AccountService.get_zerodha_login_url(db, account_id)
+        return {"login_url": url}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@router.get("/zerodha/callback")
+async def zerodha_callback(
+    request_token: str,
+    state: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Callback for Zerodha official OAuth login"""
+    result = await AccountService.handle_zerodha_callback(request_token, state)
+    if result.get("success"):
+        # Return a simple HTML page that closes itself
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(content="""
+            <html>
+                <body>
+                    <h1>Authorization Successful!</h1>
+                    <p>You can close this window now.</p>
+                    <script>
+                        setTimeout(() => window.close(), 2000);
+                    </script>
+                </body>
+            </html>
+        """)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result.get("error", "Authorization failed")
+        )
+
+
 @router.post("/validate")
 async def validate_account(
     account_data: AccountCreate,

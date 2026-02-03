@@ -73,8 +73,9 @@ class FivePaisaMarginAdapter:
             
             print(f"DEBUG: Executing direct 5paisa API call for account {account.account_id}...", flush=True)
             
-            async with httpx.AsyncClient(verify=False) as client:
-                response = await client.post(url, json=payload, headers=headers, timeout=10.0)
+            from app.core.http import HttpClient
+            client = HttpClient.get_client()
+            response = await client.post(url, json=payload, headers=headers, timeout=10.0)
                 
             if response.status_code != 200:
                 logger.error(f"5paisa API Error {response.status_code} for account {account.account_id}: {response.text}")

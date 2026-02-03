@@ -2,7 +2,7 @@
 Trade schemas for request/response validation
 """
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 from app.models.trade import OrderSide, OrderType, OrderStatus
 
@@ -16,21 +16,37 @@ class TradeRequest(BaseModel):
     quantity: int = Field(..., gt=0, description="Quantity to trade")
     order_type: OrderType = Field(..., description="Order type: MARKET, LIMIT, SL, SL_M")
     
+    # Target execution
+    account_ids: Optional[List[int]] = Field(None, description="Specific account IDs to execute on. If None, executes on ALL enabled accounts.")
+    
     # Price parameters
     price: Optional[float] = Field(None, gt=0, description="Price for LIMIT/SL orders")
     trigger_price: Optional[float] = Field(None, gt=0, description="Trigger price for SL/SL_M orders")
     
-    # Zerodha-specific parameters
-    product: str = Field(default="CNC", description="Product type: CNC (delivery), MIS (intraday), NRML (F&O)")
-    variety: str = Field(default="regular", description="Order variety: regular, amo, bo, co, iceberg")
-    validity: str = Field(default="DAY", description="Order validity: DAY, IOC")
+    # Advanced parameters
+    product: str = Field(default="MIS", description="Product type: CNC, MIS, NRML, etc.")
     disclosed_quantity: Optional[int] = Field(None, gt=0, description="Quantity to disclose publicly")
-    tag: Optional[str] = Field(None, max_length=8, description="Alphanumeric tag for order tracking")
     
-    # 5paisa-specific parameters
-    is_intraday: bool = Field(default=False, description="True for intraday, False for delivery (5paisa)")
-    exchange_type: str = Field(default="C", description="Exchange segment: C (Cash), D (Derivatives), U (Currency) - for 5paisa")
-    scrip_code: Optional[int] = Field(None, description="5paisa scrip code (e.g., RELIANCE=500325, TCS=532540)")
+    # BO/CO specific (Trigger/Target/Stoploss)
+    # Using specific names from frontend Trade.tsx
+    Target: Optional[float] = Field(None, gt=0, description="Profit target for BO")
+    Stoploss: Optional[float] = Field(None, gt=0, description="Stoploss for BO/CO")
+    trailing_stoploss: Optional[float] = Field(None, gt=0, alias="Trail. Stoploss")
+    
+    # Metadata from UI
+    variety: Optional[str] = Field("regular", description="regular, bo, co, amo")
+    validity: Optional[str] = Field("DAY", description="DAY, IOC")
+    tag: Optional[str] = None
+    
+    # UI Toggles / Orchestration
+    amo: bool = Field(False, description="After Market Order")
+    groupAcc: bool = Field(False, description="Group Accounts")
+    diffQty: bool = Field(False, description="Different Quantities")
+    multiplier: bool = Field(False, description="Use Multiplier")
+    
+    # Splitting
+    split: str = Field("NO", description="NO, AUTO, QTY")
+    splitQty: Optional[int] = Field(None, description="Quantity for split")
     
     class Config:
         json_schema_extra = {
@@ -41,9 +57,10 @@ class TradeRequest(BaseModel):
                 "quantity": 10,
                 "order_type": "LIMIT",
                 "price": 2500.0,
-                "product": "CNC",
+                "product": "INTRADAY",
                 "variety": "regular",
-                "validity": "DAY"
+                "validity": "DAY",
+                "account_ids": [1]
             }
         }
 

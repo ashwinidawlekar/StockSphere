@@ -133,7 +133,11 @@ const Positions: React.FC = () => {
           </Tooltip>
         </Col>
       </Row>
-      <PositionTable setPositions={setPositions} searchText={searchText} />
+      <PositionTable 
+        setPositions={setPositions} 
+        searchText={searchText} 
+        openOnly={openType === "OPEN"} 
+      />
       <PositionSummary positions={positions} />
     </div>
   );

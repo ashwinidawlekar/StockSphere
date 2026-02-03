@@ -2,13 +2,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routes import accounts  # , marketwatch, trades
-from app.api.endpoints import auth  # Auth endpoints
+from app.api.routes import accounts, positions, trades
+from app.api.endpoints import auth
 from app.core.database import engine, Base
-
-# Note: Database tables are created via alembic migrations
-
-
 from contextlib import asynccontextmanager
 import asyncio
 from app.services.account_service import AccountService
@@ -16,10 +12,11 @@ from app.services.account_service import AccountService
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Initialize broker sessions for all enabled accounts
-    # We do this in background to not block server startup
+    from app.core.http import HttpClient
     asyncio.create_task(AccountService.initialize_all_sessions())
     yield
-    # Shutdown logic if needed
+    # Shutdown: Close shared HTTP client
+    await HttpClient.close_client()
 
 app = FastAPI(
     title="StockSphere Trading Backend",
@@ -27,7 +24,6 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,13 +33,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(auth.router, prefix=settings.API_V1_PREFIX)  # Auth: /api/v1/auth/*
-app.include_router(accounts.router, prefix=settings.API_V1_PREFIX)  # Accounts: /api/v1/accounts/*
-# app.include_router(marketwatch.router, prefix=settings.API_V1_PREFIX)  # Commented out - has import errors
-# app.include_router(trades.router, prefix=settings.API_V1_PREFIX)  # Commented out - has import errors
-
-
+app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
+app.include_router(accounts.router, prefix=settings.API_V1_PREFIX)
+app.include_router(positions.router, prefix=settings.API_V1_PREFIX)
+app.include_router(trades.router, prefix=settings.API_V1_PREFIX)
 
 
 

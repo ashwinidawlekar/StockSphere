@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Dict, Any
 from app.models.account import Account, BrokerName
 from app.services.account_service import AccountService
-from app.adapters.zerodha_margin_adapter import ZerodhaMarginAdapter
 from app.adapters.fivepaisa_margin_adapter import FivePaisaMarginAdapter
 
 logger = logging.getLogger(__name__)
@@ -35,15 +34,26 @@ class MarginService:
                 logger.info(f"No enabled accounts found for user {user_id}")
                 return []
             
-            logger.info(f"Fetching margins for {len(accounts)} accounts for user {user_id}")
+            logger.info(f"Fetching margins for {len(accounts)} accounts for user {user_id} in parallel")
             
-            margins = []
-            for account in accounts:
-                margin_data = await MarginService.get_margin_for_account(db, account)
-                if margin_data:
-                    margins.append(margin_data)
+            import asyncio
+            # Limit concurrency to 10 at a time to be safe with broker rate limits
+            semaphore = asyncio.Semaphore(10)
             
-            logger.info(f"Successfully fetched margins for {len(margins)} accounts")
+            async def fetch_with_semaphore(acc):
+                async with semaphore:
+                    return await MarginService.get_margin_for_account(db, acc)
+            
+            # Create tasks for all accounts
+            tasks = [fetch_with_semaphore(account) for account in accounts]
+            
+            # Execute all tasks in parallel
+            results = await asyncio.gather(*tasks)
+            
+            # Filter out None results
+            margins = [r for r in results if r is not None]
+            
+            logger.info(f"Successfully fetched margins for {len(margins)}/{len(accounts)} accounts")
             return margins
             
         except Exception as e:
@@ -90,8 +100,9 @@ class MarginService:
         Returns:
             Margin data dictionary
         """
-        adapter = ZerodhaMarginAdapter()
-        return await adapter.get_margins(account)
+        from app.adapters.zerodha_adapter import ZerodhaAdapter
+        adapter = ZerodhaAdapter(account=account)
+        return await adapter.get_margins()
     
     @staticmethod
     async def _fetch_fivepaisa_margin(account: Account) -> Dict[str, Any]:

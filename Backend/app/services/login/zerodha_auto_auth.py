@@ -1,109 +1,128 @@
-import time
-import logging
-from typing import Optional, Dict, Any
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+"""
+Automated authentication for Zerodha
+Simulates the browser login flow to obtain a request_token without manual intervention (add acc creds, then click validate, raw fast http post request will get you accesstoken easy! )
+"""
+import httpx
 import pyotp
+import logging
+import re
+from typing import Dict, Any, Optional
+from urllib.parse import urlparse, parse_qs
+from datetime import datetime
+from kiteconnect import KiteConnect
 
 logger = logging.getLogger(__name__)
 
 class ZerodhaAutoAuth:
-    """Handles automated login to Zerodha Kite and retrieves access token"""
+    """
+    Login -> 2FA (TOTP) -> Request Token -> Access Token
+    """
     
-    KITE_LOGIN_URL = "https://kite.zerodha.com/"
-    KITE_API_URL = "https://kite.zerodha.com/connect/login"
-    
-    def __init__(self, user_id: str, password: str, totp_secret: str, api_key: str):
-        self.user_id = user_id
-        self.password = password
-        self.totp_secret = totp_secret
-        self.api_key = api_key
-        self.driver = None
+    def __init__(self):
+        self.base_url = "https://kite.zerodha.com"
+        self.login_url = f"{self.base_url}/api/login"
+        self.twofa_url = f"{self.base_url}/api/twofa"
         
-    def __enter__(self):
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(options=options)
-        return self
+    async def get_access_token(self, account_id: int, client_id: str, password: str, totp_secret: str, api_key: str, api_secret: str) -> Dict[str, Any]:
+        """
+        Performs the complete automated login handshake.
+        """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer": "https://kite.zerodha.com/",
+        }
         
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.driver:
-            self.driver.quit()
-            
-    def get_totp(self) -> str:
-        """Generate TOTP using the secret"""
-        return pyotp.TOTP(self.totp_secret).now()
-        
-    def authenticate(self) -> Dict[str, Any]:
-        """Perform the authentication flow and return access token"""
-        if not self.driver:
-            raise RuntimeError("WebDriver not initialized. Use as context manager.")
-            
-        try:
-            # Step 1: Navigate to Kite login
-            self.driver.get(self.KITE_LOGIN_URL)
-            
-            # Step 2: Enter user ID and password
-            user_id_field = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
-            )
-            password_field = self.driver.find_element(By.XPATH, "//input[@type='password']")
-            
-            user_id_field.clear()
-            user_id_field.send_keys(self.user_id)
-            password_field.send_keys(self.password)
-            self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-            
-            # Step 3: Enter TOTP
-            totp_field = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@label='Enter your user ID']/following-sibling::input"))
-            )
-            totp = self.get_totp()
-            totp_field.send_keys(totp)
-            self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-            
-            # Step 4: Wait for redirect and extract request token
-            WebDriverWait(self.driver, 10).until(
-                lambda d: "request_token" in d.current_url
-            )
-            
-            # Extract request token from URL
-            request_token = self.extract_request_token(self.driver.current_url)
-            if not request_token:
-                raise Exception("Failed to extract request token from URL")
+        async with httpx.AsyncClient(headers=headers, follow_redirects=True) as client:
+            try:
+                print(f"DEBUG: [Zerodha AutoAuth] Step 1: Starting login for {client_id}...", flush=True)
                 
-            return {
-                "success": True,
-                "request_token": request_token,
-                "error": None
-            }
-            
-        except TimeoutException as e:
-            error_msg = f"Timeout during login: {str(e)}"
-            logger.error(error_msg)
-            return {
-                "success": False,
-                "request_token": None,
-                "error": error_msg
-            }
-        except Exception as e:
-            error_msg = f"Login failed: {str(e)}"
-            logger.error(error_msg)
-            return {
-                "success": False,
-                "request_token": None,
-                "error": error_msg
-            }
-    
+                login_payload = {
+                    "user_id": client_id,
+                    "password": password
+                }
+                
+                resp = await client.post(self.login_url, data=login_payload)
+                login_data = resp.json()
+                
+                if login_data.get("status") != "success":
+                    error = login_data.get("message", "Login failed")
+                    logger.error(f"Account {account_id}: Login initial step failed: {error}")
+                    return {"success": False, "error": error}
+                
+                request_id = login_data["data"]["request_id"]
+                print(f"DEBUG: [Zerodha AutoAuth] Step 1 Success: Login initial step successful, request_id obtained.", flush=True)
+                logger.info(f"Account {account_id}: Login step 1 success, request_id obtained")
+                
+                
+                print(f"DEBUG: [Zerodha AutoAuth] Step 2: Performing 2FA (TOTP)...", flush=True)
+                otp = pyotp.TOTP(totp_secret).now()
+                twofa_payload = {
+                    "user_id": client_id,
+                    "request_id": request_id,
+                    "twofa_value": otp,
+                    "skip_session": "true"
+                }
+                
+                resp = await client.post(self.twofa_url, data=twofa_payload)
+                twofa_data = resp.json()
+                
+                if twofa_data.get("status") != "success":
+                    error = twofa_data.get("message", "2FA failed")
+                    logger.error(f"Account {account_id}: 2FA step failed: {error}")
+                    return {"success": False, "error": f"2FA/TOTP failed: {error}"}
+                
+                print(f"DEBUG: [Zerodha AutoAuth] Step 2 Success: 2FA successful, proceeding to obtain request_token.", flush=True)
+                logger.info(f"Account {account_id}: 2FA success, proceeding to obtain request_token")
+                
+                # After 2FA Zerodha redirects to the finish URL which contains the request_token Since we are using Kite Connect flow, we need to hit the connect URL first to get the proper redirect okay?!
+                
+                connect_url = f"https://kite.zerodha.com/connect/login?v=3&api_key={api_key}"
+                resp = await client.get(connect_url)
+                
+                final_url = str(resp.url)
+                logger.info(f"Account {account_id}: Final redirect URL obtained")
+                
+                if "request_token=" not in final_url:
+                    logger.error(f"Account {account_id}: request_token not found in redirect URL: {final_url}")
+                    return {"success": False, "error": "Failed to obtain request_token"}
+                
+                # Extracting request_token from the URL
+                parsed_url = urlparse(final_url)
+                query_params = parse_qs(parsed_url.query)
+                request_token = query_params.get("request_token", [None])[0]
+                
+                if not request_token:
+                    logger.error(f"Account {account_id}: Could not parse request_token from URL")
+                    return {"success": False, "error": "Request token parsing failed"}
+                
+                print(f"DEBUG: [Zerodha AutoAuth] Step 3: request_token extracted successfully.", flush=True)
+                logger.info(f"Account {account_id}: Request token obtained successfully")
+                
+                
+                print(f"DEBUG: [Zerodha AutoAuth] Final Step: Generating session access_token...", flush=True)
+                kite = KiteConnect(api_key=api_key)
+                # generate_session is synchronous in kiteconnect library so we run it in a thread to avoid blocking the event loop this makes it more faster 
+                import asyncio
+                session = await asyncio.to_thread(kite.generate_session, request_token, api_secret)
+                
+                access_token = session.get("access_token")
+                
+                if not access_token:
+                    logger.error(f"Account {account_id}: generate_session did not return access_token")
+                    return {"success": False, "error": "Kite session generation failed"}
+                
+                print(f"DEBUG: [Zerodha AutoAuth] ALL STEPS COMPLETE: Automated login successful!", flush=True)
+                logger.info(f"Account {account_id}: Automated login successful!")
+                return {
+                    "success": True,
+                    "access_token": access_token,
+                    "token_generated_at": session.get("login_time") or datetime.now()
+                }
+                
+            except Exception as e:
+                logger.error(f"Account {account_id}: Automated login exception: {str(e)}", exc_info=True)
+                return {"success": False, "error": str(e)}
+
     @staticmethod
-    def extract_request_token(url: str) -> Optional[str]:
-        """Extract request token from URL"""
-        from urllib.parse import urlparse, parse_qs
-        parsed = urlparse(url)
-        params = parse_qs(parsed.query)
-        return params.get('request_token', [None])[0]
+    def get_auto_auth():
+        return ZerodhaAutoAuth()

@@ -11,6 +11,7 @@ from app.core.encryption import encryption_service
 from app.services.login.zerodha_login_service import ZerodhaLoginService
 from app.services.login.fivepaisa_login_service import FivePaisaLoginService
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +23,11 @@ class AccountService:
     def _clean_token(token: Any) -> Optional[str]:
         """
         Defensively clean access token.
-        Handles:
-        1. Bytes object -> decode to str
-        2. String starting with b' or b" -> strip the b and quotes
-        3. String wrapped in quotes -> strip quotes
-        4. None or empty -> return None
+        it handles (for 5paisa JWTs mostly):
+        Bytes object -> decode to str
+        String starting with b' or b" -> strip the b and quotes
+        String wrapped in quotes -> strip quotes
+        None or empty -> return None
         """
         if not token:
             return None
@@ -79,7 +80,7 @@ class AccountService:
         Returns:
             Created account
         """
-        # Encrypt sensitive credentials
+        
         if account_data.broker_name == BrokerName.ZERODHA:
             encrypted_password = encryption_service.encrypt(account_data.trading_password)
             encrypted_totp = encryption_service.encrypt(account_data.totp_secret_key)
@@ -88,7 +89,7 @@ class AccountService:
         elif account_data.broker_name == BrokerName.FIVEPAISA:
             encrypted_password = encryption_service.encrypt(account_data.mpin)  # MPIN
             encrypted_totp = encryption_service.encrypt(account_data.totp_secret_key)
-            # NEW: Encrypt login_password (different from MPIN)
+            #  Encrypt login_password (different from MPIN)
             encrypted_login_password = encryption_service.encrypt(account_data.login_password) if account_data.login_password else None
             user_id = account_data.user_id  # USER_ID (different from client_code)
         else:
@@ -114,9 +115,9 @@ class AccountService:
         
         # SAVE TO DATABASE DIRECTLY
         # We skip mandatory internal validation here because:
-        # 1. The frontend already calls /validate before enabling the Save button.
-        # 2. TOTP codes are one-time use; re-validating here often fails with "OTP used".
-        # 3. The background worker will pick this up and perform the first real login soon.
+        # The frontend already validates before enabling the Save button.
+        # TOTP codes are one-time use re-validating here often fails with "OTP used" (doesnt make any sense tbh)
+        # The background worker will pick this up and perform the first real login soon.
         
         db.add(account)
         await db.commit()
@@ -204,6 +205,7 @@ class AccountService:
         """
         Proactive startup task to initialize sessions for all enabled accounts.
         Ensures that tokens are valid and ready before user requests data.
+        Uses parallel processing for scalability.
         """
         try:
             from app.core.database import AsyncSessionLocal
@@ -219,46 +221,52 @@ class AccountService:
                     logger.info("No enabled accounts to initialize.")
                     return
                 
-                print(f"DEBUG: Found {len(accounts)} enabled accounts for initialization.", flush=True)
+                logger.info(f"Initializing {len(accounts)} enabled accounts in parallel.")
                 
-                for account in accounts:
-                    try:
-                        print(f"DEBUG: Initializing account {account.account_id} ({account.broker_name})...", flush=True)
-                        # Re-fetch specific account to avoid session conflicts and ensure we have latest data
-                        result = await db.execute(select(Account).where(Account.account_id == account.account_id))
-                        db_account = result.scalar_one_or_none()
-                        
-                        if not db_account:
-                            continue
+                # worker for parallel execution
+                async def initialize_single_account(account_id: int):
+                    # Create a new session per task to avoid concurrency issues with a single session object
+                    async with AsyncSessionLocal() as session:
+                        try:
+                            result = await session.execute(select(Account).where(Account.account_id == account_id))
+                            db_account = result.scalar_one_or_none()
+                            
+                            if not db_account:
+                                return
+                            
+                            logger.info(f"Initializing account {account_id} ({db_account.broker_name})")
+                            
+                            # validating the token
+                            if db_account.broker_name == BrokerName.ZERODHA.value:
+                                service = ZerodhaLoginService()
+                                await service.ensure_valid_token(db_account)
+                            elif db_account.broker_name == BrokerName.FIVEPAISA.value:
+                                service = FivePaisaLoginService()
+                                await service.ensure_valid_token(db_account)
+                            
+                            
+                            original_token = db_account.access_token
+                            cleaned_token = AccountService._clean_token(original_token)
+                            
+                            if cleaned_token != original_token:
+                                db_account.access_token = cleaned_token
+                            
+                            session.add(db_account)
+                            await session.commit()
+                            logger.info(f"Account {account_id} initialized successfully.")
+                            
+                        except Exception as e:
+                            logger.error(f"Failed to initialize account {account_id}: {str(e)}")
+                            await session.rollback()
 
-                        # Attempt to ensure a valid token (refreshes if it's expired)
-                        if db_account.broker_name == BrokerName.ZERODHA.value:
-                            service = ZerodhaLoginService()
-                            await service.ensure_valid_token(db_account)
-                        elif db_account.broker_name == BrokerName.FIVEPAISA.value:
-                            service = FivePaisaLoginService()
-                            await service.ensure_valid_token(db_account)
-                        
-                        # CRITICAL: Even if the session was already "valid", we MUST clean the token 
-                        # to fix any literal b'...' prefixes or other malformations once and for all.
-                        original_token = db_account.access_token
-                        print(f"DEBUG: Account {db_account.account_id} token before clean: {repr(original_token)[:50]}...", flush=True)
-                        cleaned_token = AccountService._clean_token(original_token)
-                        
-                        if cleaned_token != original_token:
-                            print(f"DEBUG: Cleaned token for account {db_account.account_id}!", flush=True)
-                            db_account.access_token = cleaned_token
-                        
-                        # Save changes to database
-                        db.add(db_account)
-                        await db.commit()
-                        
-                        print(f"DEBUG: Account {db_account.account_id} initialization complete and saved.", flush=True)
-                    except Exception as e:
-                        print(f"DEBUG ERROR: Failed to initialize session for account {account.account_id}: {e}", flush=True)
-                        await db.rollback()
-                
-                logger.info("Session initialization complete.")
+                # Run all in parallel with a semaphore to avoid overwhelming APIs
+                sem = asyncio.Semaphore(10)
+                async def sem_worker(acc_id):
+                    async with sem:
+                        await initialize_single_account(acc_id)
+
+                await asyncio.gather(*(sem_worker(acc.account_id) for acc in accounts))
+                logger.info("Session initialization cycle complete.")
                 
         except Exception as e:
             logger.error(f"Error in initialize_all_sessions: {e}", exc_info=True)
@@ -288,7 +296,7 @@ class AccountService:
             result = await login_service.login(account)
             
             if result.get("success") and result.get("access_token"):
-                # Clean the token before saving
+                
                 account.access_token = AccountService._clean_token(result["access_token"])
                 account.token_generated_at = result.get("token_generated_at")
                 account.is_validated = True
@@ -412,7 +420,7 @@ class AccountService:
         await db.commit()
         await db.refresh(account)
         
-        # If credentials changed and account is enabled, check them by relogin bruh
+        # iif credentials changed and account is enabled, check them by relogin bruh
         if account.is_enabled and (
             account_data.trading_password or account_data.mpin or 
             account_data.totp_secret_key
@@ -503,3 +511,19 @@ class AccountService:
         
         logger.info(f"Deleted account {account_id}")
         return True
+
+    @staticmethod
+    async def get_zerodha_login_url(db: AsyncSession, account_id: int) -> str:
+        """Get official login URL for Zerodha account"""
+        account = await AccountService.get_account(db, account_id)
+        if not account or account.broker_name != BrokerName.ZERODHA.value:
+            raise ValueError("Invalid account for Zerodha login")
+        service = ZerodhaLoginService()
+        return service.get_login_url(account)
+
+    # this is the callback function for zerodha login (will work on it when i have to implement orders and market data(marketwatch))
+    @staticmethod
+    async def handle_zerodha_callback(request_token: str, account_id: str) -> Dict[str, Any]:
+        """Handle Kite callback and generate access token"""
+        service = ZerodhaLoginService()
+        return await service.handle_callback(request_token, account_id)

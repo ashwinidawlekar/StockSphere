@@ -90,4 +90,10 @@ export const accountService = {
   delete: async (accountId: number): Promise<void> => {
     await apiClient.delete(`/accounts/${accountId}`);
   },
+
+  // Get manual authorization URL for Zerodha
+  getZerodhaLoginUrl: async (accountId: number): Promise<{ login_url: string }> => {
+    const response = await apiClient.get(`/accounts/${accountId}/zerodha/login-url`);
+    return response.data;
+  },
 };

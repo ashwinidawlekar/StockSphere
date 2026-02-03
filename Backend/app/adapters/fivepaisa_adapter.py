@@ -1,120 +1,121 @@
-"""5paisa API adapter"""
-from typing import List, Dict, Optional
-import httpx
 from app.adapters.base import BrokerInterface
-from app.schemas.trade import TradeRequest
-from app.config import settings
+from app.models.account import Account
+from app.services.fivepaisa_rest_client import FivePaisaRestClient
+from app.services.scrip_master_service import ScripMasterService
+from app.core.config import settings
+import logging
+from typing import Dict, List, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 
 class FivePaisaAdapter(BrokerInterface):
-    """5paisa API adapter"""
+    """5paisa API adapter using direct REST client"""
     
-    def __init__(self, api_key: str, api_secret: str, access_token: str):
-        self.api_key = api_key
-        self.api_secret = api_secret
-        self.access_token = access_token
-        self.base_url = settings.FIVEPAISA_API_BASE_URL
-    
-    async def _make_request(
-        self,
-        method: str,
-        endpoint: str,
-        params: Optional[Dict] = None,
-        data: Optional[Dict] = None
-    ) -> Dict:
-        """Make HTTP request to 5paisa API"""
-        url = f"{self.base_url}{endpoint}"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.access_token}",
-            "X-API-KEY": self.api_key
+    def __init__(self, account: Account, db: Optional[AsyncSession] = None):
+        self.account = account
+        self.db = db
+        self.cred = {
+            "APP_NAME": account.api_key,
+            "APP_SOURCE": account.app_source or "10074",
+            "USER_ID": account.trading_login_id,
+            "PASSWORD": account.encrypted_password, # Note: decrypted by account service
+            "USER_KEY": account.user_key or account.api_key,
+            "ENCRYPTION_KEY": account.api_secret
         }
-        
-        async with httpx.AsyncClient() as client:
-            if method == "GET":
-                response = await client.get(url, headers=headers, params=params)
-            elif method == "POST":
-                response = await client.post(url, headers=headers, json=data)
-            else:
-                raise ValueError(f"Unsupported method: {method}")
-            
-            response.raise_for_status()
-            return response.json()
+        self.client = FivePaisaRestClient(credentials=self.cred)
+        # Token is already managed by account service
+        self.client.access_token = account.access_token
+        self.client.client_code = account.trading_login_id
+    
+    async def get_margins(self) -> Dict:
+        """Fetch margins for 5paisa (Mock)"""
+        return {
+            "equity": {"available": {"cash": 100000.0}},
+            "commodity": {"available": {"cash": 50000.0}}
+        }
+
+    async def get_positions(self) -> List[Dict]:
+        """Fetch positions for 5paisa (Mock)"""
+        return []
     
     async def get_instruments(self, exchange: Optional[str] = None) -> List[Dict]:
-        """Fetch instruments from 5paisa"""
-        try:
-            # Mock implementation &&
-            # Mock response
-            return [
-                {
-                    "ScripCode": 12345,
-                    "Name": "RELIANCE",
-                    "Symbol": "RELIANCE",
-                    "Exchange": "NSE",
-                    "LastTradedPrice": 2500.50
-                }
-            ]
-        except Exception as e:
-            print(f"Error fetching instruments from 5paisa: {e}")
-            return []
+        """Fetch instruments from 5paisa (Mock)"""
+        return []
     
     async def get_ltp(self, symbol: str, exchange: str) -> Optional[float]:
-        """Get LTP from 5paisa"""
-        try:
-            # Mock implementation &&
-            
-            # Mock response
-            return 2500.50
-        except Exception as e:
-            print(f"Error fetching LTP from 5paisa: {e}")
-            return None
+        """Get LTP from 5paisa (Mock)"""
+        return 2500.50
     
     def normalize_symbol(self, symbol: str, exchange: str) -> str:
         """Normalize symbol for 5paisa"""
         return symbol.upper()
     
-    async def place_order(self, order_request: TradeRequest) -> Dict:
-        """Place order with 5paisa"""
+    async def place_order(self, order_params: Dict) -> Dict:
+        """Place order with 5paisa using FivePaisaRestClient"""
         try:
-            # Map our order types to 5paisa order types
-            order_type_map = {
-                "LIMIT": "L",
-                "MARKET": "MKT",
-                "STOP_LOSS": "SL",
-                "SL_MARKET": "SL-M"
-            }
+            # Resolve ScripCode using ScripMasterService
+            scrip_code = order_params.get("scrip_code")
+            if not scrip_code:
+                symbol = order_params.get("tradingsymbol") or order_params.get("symbol")
+                exchange = order_params.get("exchange", "NSE")
+                scrip_code = ScripMasterService.get_scrip_code(symbol, exchange)
+                
+            if not scrip_code:
+                 return {
+                    "order_id": None,
+                    "status": "FAILED",
+                    "error": f"Could not resolve ScripCode for {order_params.get('tradingsymbol')}"
+                }
+
+            # Map Transaction Type
+            side = order_params.get("transaction_type")
+            order_type = "B" if side == "BUY" else "S"
             
-            product_type_map = {
-                "INTRADAY": "I",
-                "DELIVERY": "D",
-                "NORMAL": "C",
-                "MTF": "M"
-            }
+            # Map Exchange Segment
+            exchange = order_params.get("exchange", "NSE")
+            exch_type = "C" # Cash
+            if exchange == "MCX": exch_type = "D" # Derivatives
             
-            order_data = {
-                "Exchange": order_request.exchange,
-                "ExchangeType": "C",  
-                "ScripCode": 0,  # Need to resolve from symbol
-                "Price": order_request.price if order_request.price_type == "LIMIT" else 0,
-                "OrderType": order_type_map.get(order_request.price_type, "MKT"),
-                "Qty": order_request.quantity,
-                "DisQty": order_request.disclosed_quantity or 0,
-                "StopLossPrice": order_request.trigger_price or 0,
-                "IsIntraday": order_request.product == "INTRADAY",
-                "ProductType": product_type_map.get(order_request.product, "I"),
-                "IsStopLossOrder": order_request.price_type in ["STOP_LOSS", "SL_MARKET"],
-            }
+            # Is Intraday
+            product = order_params.get("product", "INTRADAY")
+            is_intraday = (product == "INTRADAY")
+
+            logger.info(f"Placing 5paisa order via REST: {order_params.get('symbol')} ({scrip_code})")
             
-            # Mock implementation &&
+            result = await self.client.place_order(
+                scrip_code=scrip_code,
+                exchange=exchange[0], # N or B
+                exchange_type=exch_type,
+                order_type=order_type,
+                quantity=int(order_params.get("quantity", 0)),
+                price=float(order_params.get("price", 0)),
+                is_intraday=is_intraday,
+                at_market=(order_params.get("order_type") == "MARKET"),
+                stop_loss_price=float(order_params.get("trigger_price", 0)),
+                disclosed_qty=int(order_params.get("disclosed_qty", 0)),
+                target_price=float(order_params.get("target", 0)),
+                trailing_sl=float(order_params.get("trailing_stoploss", 0)),
+                variety=order_params.get("variety", "regular"),
+                is_amo=order_params.get("is_amo", False)
+            )
             
-            # Mock response
-            return {
-                "order_id": f"FIVEPAISA_{order_request.symbol}_{order_request.quantity}",
-                "status": "COMPLETED",
-                "message": "Order placed successfully"
-            }
+            if result.get("success"):
+                return {
+                    "order_id": result.get("order_id"),
+                    "status": "SUCCESS",
+                    "message": result.get("message")
+                }
+            else:
+                return {
+                    "order_id": None,
+                    "status": "FAILED",
+                    "error": result.get("error")
+                }
+
         except Exception as e:
+            logger.error(f"Error placing 5paisa order: {e}")
             return {
                 "order_id": None,
                 "status": "FAILED",

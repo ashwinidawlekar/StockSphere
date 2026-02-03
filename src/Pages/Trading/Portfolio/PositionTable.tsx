@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Select } from "antd";
+import { positionService, Position } from "../../../Services/positionService";
 
 const { Option } = Select;
 
@@ -230,24 +231,32 @@ const columns = [
   ];
 
   
-const PositionTable: React.FC<{ setPositions: any; searchText: string }> = ({ setPositions, searchText }) => {
-  const [data, setData] = useState<any[]>([]);
+
+
+interface PositionTableProps {
+  setPositions: (positions: Position[]) => void;
+  searchText: string;
+  openOnly: boolean;
+}
+
+const PositionTable: React.FC<PositionTableProps> = ({ setPositions, searchText, openOnly }) => {
+  const [data, setData] = useState<Position[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [filteredData, setFilteredData] = useState(initialData);
+  const [filteredData, setFilteredData] = useState<Position[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchPositions();
-  }, []);
+  }, [openOnly]); // Re-fetch when filter changes
 
   const fetchPositions = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5001/api/positions");
-      const json = await res.json();
-      setData(json);
-      setFilteredData(json);
-      setPositions(json);
+      const response = await positionService.getAll(openOnly);
+      const positions = response.positions;
+      setData(positions);
+      setFilteredData(positions);
+      setPositions(positions);
     } catch (err) {
       console.error("Failed to fetch positions", err);
     } finally {

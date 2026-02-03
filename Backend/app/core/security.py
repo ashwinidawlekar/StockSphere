@@ -60,10 +60,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+        # Increase duration to 7 days to be safe
+        expire = datetime.utcnow() + timedelta(days=7)
     
     to_encode.update({"exp": expire})
+    print(f"DEBUG: Creating token with payload: {to_encode}", flush=True)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    print(f"DEBUG: Created token (first 10 chars): {encoded_jwt[:10]}...", flush=True)
     
     return encoded_jwt
 
@@ -79,7 +82,9 @@ def decode_access_token(token: str) -> Optional[dict]:
         Decoded token payload or None if invalid
     """
     try:
+        print(f"DEBUG: Attempting to decode token with key: {SECRET_KEY[:5]}...", flush=True)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except JWTError as e:
+        print(f"DEBUG: JWT Decode error in security.py: {str(e)}", flush=True)
         return None

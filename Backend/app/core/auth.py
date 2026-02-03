@@ -40,9 +40,12 @@ async def get_current_user(
     )
     
     
+    print(f"DEBUG: get_current_user token received: {token[:10]}...", flush=True)
     payload = decode_access_token(token)
     if payload is None:
+        print("DEBUG: Payload is None after decode", flush=True)
         raise credentials_exception
+    print(f"DEBUG: Decoded payload: {payload}", flush=True)
     
     
     user_id: Optional[int] = payload.get("user_id")

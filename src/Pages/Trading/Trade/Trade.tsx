@@ -18,6 +18,9 @@ import {
 } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import { InfoCircleOutlined, FileTextOutlined } from '@ant-design/icons';
+import tradeService from '../../../Services/tradeService';
+import { accountService, Account } from '../../../Services/accountService';
+import { notification, message as antMessage } from 'antd';
 
 const { Option } = Select;
 
@@ -36,8 +39,81 @@ const Trade: React.FC = () => {
     { key: string; symbol: string; exch: string }[]
   >([]); 
 
-  const handleSubmit = (values: any) => {
-    console.log('Submitted:', values);
+  const [submitting, setSubmitting] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setLoadingAccounts(true);
+      try {
+        const response = await accountService.getAll(true);
+        if (response && response.accounts) {
+          setAccounts(response.accounts);
+        } else if (Array.isArray(response)) {
+          setAccounts(response);
+        } else {
+          setAccounts([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch accounts:', error);
+      } finally {
+        setLoadingAccounts(false);
+      }
+    };
+    fetchAccounts();
+  }, []);
+
+  const handleSubmit = async (values: any) => {
+    setSubmitting(true);
+    try {
+      const cleanNumber = (val: any) => {
+        const num = Number(val);
+        return (isNaN(num) || num === 0) ? undefined : num;
+      };
+
+      const requestData = {
+        symbol: values.symbol,
+        exchange: values.exchange,
+        side: values.side,
+        quantity: Number(values.quantity),
+        order_type: values.priceType === 'MARKET' ? 'MARKET' : (values.priceType === 'LIMIT' ? 'LIMIT' : (values.priceType === 'STOP_LOSS' ? 'SL' : 'SL_M')),
+        price: values.priceType !== 'MARKET' && values.priceType !== 'SL_MARKET' ? cleanNumber(values.price) : undefined,
+        trigger_price: values.priceType === 'STOP_LOSS' || values.priceType === 'SL_MARKET' ? cleanNumber(values.triggerPrice) : undefined,
+        product: values.product,
+        disclosed_quantity: cleanNumber(values.disclosedQty),
+        account_ids: values.account_ids,
+        Target: cleanNumber(values.Target),
+        Stoploss: cleanNumber(values.Stoploss),
+        trailing_stoploss: cleanNumber(values['Trail. Stoploss']),
+        variety: (values.orderType || 'REGULAR').toLowerCase(),
+        validity: values.timeInForce || 'DAY',
+        amo: !!values.amo,
+        groupAcc: !!values.groupAcc,
+        diffQty: !!values.diffQty,
+        multiplier: !!values.multiplier,
+        split: values.split || 'NO',
+        splitQty: cleanNumber(values.splitQty)
+      };
+
+      const result = await tradeService.placeTrade(requestData as any);
+      
+      notification.success({
+        message: 'Trade Executed',
+        description: `Successfully initiated trade for ${values.symbol} across ${values.account_ids?.length || 'all'} accounts.`,
+        placement: 'topRight'
+      });
+      
+      form.resetFields(['symbol', 'quantity', 'price', 'triggerPrice']);
+    } catch (error: any) {
+      notification.error({
+        message: 'Trade Failed',
+        description: error.response?.data?.detail || error.message || 'An error occurred while placing the trade.',
+        placement: 'topRight'
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -158,11 +234,14 @@ const Trade: React.FC = () => {
             priceType: 'LIMIT',
             exchange: 'NSE',
             quantity: 1,
-            price: '0',
-            triggerPrice: '0',
-            disclosedQty: '0',
+            price: undefined,
+            triggerPrice: undefined,
+            disclosedQty: undefined,
             timeInForce: 'DAY',
             split: 'NO',
+            amo: false,
+            groupAcc: false,
+            multiplier: false
           }}
           onFinish={handleSubmit}
         >
@@ -333,11 +412,25 @@ const Trade: React.FC = () => {
 
             {/* Accounts */}
             <Col span={8}>
-              <Tooltip title="Select accounts (Hold <Strl> or <Shift> to select multiple. <Ctrl + a> to select all"> 
-              <Form.Item label="Accounts">
-                <Input value="" size="large" />
+              <Form.Item 
+                label="Accounts" 
+                name="account_ids" 
+                rules={[{ required: true, message: 'Select at least one account' }]}
+              >
+                <Select 
+                  mode="multiple" 
+                  size="large" 
+                  placeholder="Select Accounts"
+                  loading={loadingAccounts}
+                  maxTagCount="responsive"
+                >
+                  {Array.isArray(accounts) && accounts.map(acc => (
+                    <Option key={acc.account_id} value={acc.account_id}>
+                      {acc.nickname || acc.trading_login_id} ({acc.broker_name})
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
-              </Tooltip>
             </Col>
 
             {/* BO Fields */}
@@ -424,7 +517,13 @@ const Trade: React.FC = () => {
               <Divider style={{ margin: '8px 0' }} />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Space>
-                  <Button type="primary" htmlType="submit" size="small" danger={side === 'SELL'}>
+                  <Button 
+                    type="primary" 
+                    htmlType="submit" 
+                    size="small" 
+                    danger={side === 'SELL'}
+                    loading={submitting}
+                  >
                     {side === 'SELL' ? 'SELL' : 'BUY'}
                   </Button>
                   <Button htmlType="button" onClick={handleReset} size="small">

@@ -1,7 +1,7 @@
 """
 Account model for storing trading account information
 """
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Float
 from sqlalchemy.sql import func
 from app.core.database import Base
 import enum
@@ -44,6 +44,10 @@ class Account(Base):
     # Access token and require metadata
     access_token = Column(Text, nullable=True)  
     token_generated_at = Column(DateTime(timezone=True), nullable=True)  
+    
+    # Advanced Order Orchestration Settings
+    multiplier = Column(Float, default=1.0, nullable=False) # Order quantity scaling
+    split_freeze_limit = Column(Integer, nullable=True) # Per-account freeze limit override
     
     
     is_enabled = Column(Boolean, default=True, nullable=False, index=True)

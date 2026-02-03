@@ -124,7 +124,11 @@ class FivePaisaRestClient:
         at_market: bool = False,
         order_validity: int = 0,
         stop_loss_price: float = 0.0,
-        disclosed_qty: int = 0
+        disclosed_qty: int = 0,
+        target_price: float = 0.0,
+        trailing_sl: float = 0.0,
+        variety: str = "regular",
+        is_amo: bool = False
     ) -> Dict[str, Any]:
         """
         Place order using direct REST API
@@ -179,10 +183,19 @@ class FivePaisaRestClient:
                     "StopLossPrice": stop_loss_price,
                     "DisQty": disclosed_qty,
                     "PublicIP": "0.0.0.0",
-                    "AHPlaced": "N",
+                    "AHPlaced": "Y" if is_amo else "N",
                     "AlgoID": 0
                 }
             }
+            
+            # Map Variety specific fields (if using 5paisa's specific BO/CO endpoints or parameters)
+            # Standard PlaceOrderRequest often takes StopLossPrice. 
+            # For BO, we might need TargetPrice.
+            if variety.lower() == "bo":
+                payload["body"]["TargetPrice"] = target_price
+            
+            if trailing_sl > 0:
+                payload["body"]["TrailingSL"] = trailing_sl
             
             logger.info(f" Placing order: {order_type} {quantity} @ {price} (ScripCode: {scrip_code})")
             

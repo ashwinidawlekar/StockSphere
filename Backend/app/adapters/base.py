@@ -39,3 +39,19 @@ class BrokerInterface(ABC):
         Returns normalized symbol string
         """
         pass
+
+    @abstractmethod
+    async def get_margins(self) -> Dict:
+        """
+        Fetch margin data from broker
+        Returns dict with margin data
+        """
+        pass
+
+    @abstractmethod
+    async def get_positions(self) -> List[Dict]:
+        """
+        Fetch positions from broker
+        Returns list of position dictionaries
+        """
+        pass

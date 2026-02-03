@@ -16,11 +16,9 @@ const Login: React.FC = () => {
       // Login
       const loginResponse = await authService.login(values);
       
-      // Get user details
-      const userResponse = await authService.getCurrentUser();
-      
-      // Save to store
-      setAuth(userResponse, loginResponse.access_token);
+      // Save to store (loginResponse already contains user details)
+      const { access_token, ...userData } = loginResponse as any;
+      setAuth(userData, access_token);
       
       message.success('Login successful!');
       navigate('/trading/portfolio');

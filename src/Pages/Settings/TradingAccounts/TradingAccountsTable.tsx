@@ -49,6 +49,15 @@ const TradingAccountsTable: React.FC<{ searchText: string }> = ({ searchText }) 
     }
   };
 
+  const handleAuthorize = async (accountId: number) => {
+    try {
+      const response = await accountService.getZerodhaLoginUrl(accountId);
+      window.open(response.login_url, '_blank', 'width=600,height=600');
+    } catch (error: any) {
+      message.error('Failed to get authorization URL');
+    }
+  };
+
   const columns: ColumnsType<AccountTableData> = [
     {
       title: 'Login Id',
@@ -126,6 +135,16 @@ const TradingAccountsTable: React.FC<{ searchText: string }> = ({ searchText }) 
           >
             Edit
           </Button>
+          {record.broker === 'ZERODHA' && (
+            <Button
+              icon={<CheckCircleOutlined />}
+              size="small"
+              onClick={() => handleAuthorize(record.account_id)}
+              style={{ background: '#52c41a', color: '#fff', borderColor: '#52c41a' }}
+            >
+              Authorize
+            </Button>
+          )}
           <Popconfirm
             title="Are you sure you want to delete this account?"
             onConfirm={() => handleDelete(record.account_id)}

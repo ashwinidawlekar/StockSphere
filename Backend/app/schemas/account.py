@@ -68,6 +68,8 @@ class AccountUpdate(BaseModel):
     app_source: Optional[str] = None
     nickname: Optional[str] = None
     is_enabled: Optional[bool] = None
+    multiplier: Optional[float] = None
+    split_freeze_limit: Optional[int] = None
 
 
 class AccountResponse(BaseModel):
@@ -80,6 +82,8 @@ class AccountResponse(BaseModel):
     is_enabled: bool
     is_validated: Optional[bool] = False  
     is_paid: Optional[bool] = True  
+    multiplier: float = 1.0
+    split_freeze_limit: Optional[int] = None
     token_generated_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
